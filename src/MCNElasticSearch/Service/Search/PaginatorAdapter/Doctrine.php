@@ -9,15 +9,14 @@ namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Elastica\Result;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Service\Exception;
 
 /**
- * Class DoctrineAdapter
+ * Class Doctrine
  */
-class DoctrineAdapter extends AbstractAdapter
+class Doctrine extends AbstractAdapter
 {
     /**
      * @var \Doctrine\Common\Collections\Selectable

@@ -52,14 +52,19 @@ class SearchService implements SearchServiceInterface
         $metadata = $this->configuration->getObjectMetadata($objectClassName);
         $client   = $this->configuration->getClient();
 
-        $type = $client->getIndex($metadata->getIndex());
+        $type = $client->getIndex($metadata->getIndex())
+                       ->getType($metadata->getType());
 
         switch ($hydration)
         {
             case static::HYDRATE_DOCTRINE_OBJECT:
-                $adapter = new Search\PaginatorAdapter\DoctrineAdapter($type, $criteria);
+                $adapter = new Search\PaginatorAdapter\Doctrine($type, $criteria);
                 $adapter->setObjectMetadata($metadata);
                 $adapter->setRepository($this->objectManager->getRepository($objectClassName));
+                break;
+
+            case static::HYDRATE_RAW:
+                $adapter = new Search\PaginatorAdapter\Raw($type, $criteria);
                 break;
 
             default:
