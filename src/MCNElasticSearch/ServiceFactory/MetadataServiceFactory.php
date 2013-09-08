@@ -8,14 +8,14 @@
 namespace MCNElasticSearch\ServiceFactory;
 
 use Elastica\Client;
-use MCNElasticSearch\Service\ConfigurationService;
+use MCNElasticSearch\Service\MetadataService;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class ClientServiceFactory
  */
-class ConfigurationServiceFactory implements FactoryInterface
+class MetadataServiceFactory implements FactoryInterface
 {
     /**
      * Create service
@@ -26,6 +26,6 @@ class ConfigurationServiceFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $sl)
     {
-        return new ConfigurationService($sl->get('Config')['MCNElasticSearch']);
+        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
     }
 }

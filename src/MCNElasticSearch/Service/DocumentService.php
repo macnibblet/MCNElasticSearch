@@ -7,8 +7,9 @@
 
 namespace MCNElasticSearch\Service;
 
+use Elastica\Client;
 use Elastica\Document;
-use Zend\Log\Logger;
+use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Stdlib\Hydrator\HydratorPluginManager;
 
 /**
@@ -16,20 +17,17 @@ use Zend\Stdlib\Hydrator\HydratorPluginManager;
  */
 class DocumentService implements DocumentServiceInterface
 {
+    use EventManagerAwareTrait;
+
     /**
      * @var \Elastica\Client
      */
     protected $client;
 
     /**
-     * @var ConfigurationService
+     * @var MetadataService
      */
-    protected $config;
-
-    /**
-     * @var \Zend\Log\Logger
-     */
-    protected $logger;
+    protected $metadata;
 
     /**
      * @var \Zend\Stdlib\Hydrator\HydratorPluginManager
@@ -37,15 +35,14 @@ class DocumentService implements DocumentServiceInterface
     protected $hydratorManager;
 
     /**
-     * @param ConfigurationService $config
+     * @param \Elastica\Client $client
+     * @param MetadataService $metadata
      * @param \Zend\Stdlib\Hydrator\HydratorPluginManager $hydratorManager
-     * @param \Zend\Log\Logger $logger
      */
-    public function __construct(ConfigurationService $config, HydratorPluginManager $hydratorManager, Logger $logger)
+    public function __construct(Client $client, MetadataService $metadata, HydratorPluginManager $hydratorManager)
     {
-        $this->config          = $config;
-        $this->logger          = $logger;
-        $this->client          = $config->getClient();
+        $this->client          = $client;
+        $this->metadata        = $metadata;
         $this->hydratorManager = $hydratorManager;
     }
 
@@ -66,7 +63,7 @@ class DocumentService implements DocumentServiceInterface
         }
 
         /** @var \Zend\Stdlib\Hydrator\AbstractHydrator $hydrator */
-        $metadata = $this->config->getObjectMetadata(get_class($object));
+        $metadata = $this->metadata->getObjectMetadata(get_class($object));
         $hydrator = $this->hydratorManager->get($metadata->getHydrator());
 
         // extract data
@@ -81,6 +78,10 @@ class DocumentService implements DocumentServiceInterface
      *
      * @param mixed $object
      *
+     * @triggers add.pre
+     * @triggers add.post
+     * @triggers add.error
+     *
      * @throws Exception\InvalidArgumentException   If an invalid object is passed
      * @throws Exception\RuntimeException           In case something goes wrong during persisting the document
      *
@@ -89,23 +90,44 @@ class DocumentService implements DocumentServiceInterface
     public function add($object)
     {
         $document = $this->transform($object);
+
+        $this->getEventManager()
+             ->trigger(__FUNCTION__ . '.pre', $this, ['document' => $document, 'object' => $object]);
+
         $response = $this->client->addDocuments([$document]);
 
+        $this->getEventManager()
+             ->trigger(__FUNCTION__ . '.post', $this, ['document' => $document, 'object' => $object]);
+
         if (! $response->isOk()) {
-            $message = sprintf('Error adding document: %s', $response->getError());
-            $this->logger->err($message, ['document' => $document]);
-            throw new Exception\RuntimeException($message);
+            $this->getEventManager()
+                 ->trigger(__FUNCTION__ . '.error', $this, ['response' => $response]);
+
+            throw new Exception\RuntimeException($response->getError());
         }
     }
 
     /**
-     * @param $object
-     * @throws Exception\RuntimeException
+     * Update a document
+     *
+     * @param mixed $object
+     *
+     * @triggers update.pre
+     * @triggers update.post
+     * @triggers update.error
+     *
+     * @throws Exception\InvalidArgumentException If an invalid object is passed
+     * @throws Exception\RuntimeException         In case something goes wrong during an update
+     *
      * @return void
      */
     public function update($object)
     {
         $document = $this->transform($object);
+
+        $this->getEventManager()
+             ->trigger(__FUNCTION__ . '.pre', $this, ['document' => $document, 'object' => $object]);
+
         $response = $this->client->updateDocument(
             $document->getId(),
             $document->getData(),
@@ -113,10 +135,14 @@ class DocumentService implements DocumentServiceInterface
             $document->getType()
        );
 
+        $this->getEventManager()
+             ->trigger(__FUNCTION__ . '.post', $this, ['document' => $document, 'object' => $object]);
+
         if (! $response->isOk()) {
-            $message = sprintf('Error updating document: %s', $response->getError());
-            $this->logger->err($message, ['document' => $document]);
-            throw new Exception\RuntimeException($message);
+            $this->getEventManager()
+                 ->trigger(__FUNCTION__ . '.error', $this, ['response' => $response]);
+
+            throw new Exception\RuntimeException($response->getError());
         }
     }
 
@@ -128,12 +154,20 @@ class DocumentService implements DocumentServiceInterface
     public function delete($object)
     {
         $document = $this->transform($object);
+
+        $this->getEventManager()
+             ->trigger(__FUNCTION__ . '.pre', $this, ['document' => $document, 'object' => $object]);
+
         $response = $this->client->deleteDocuments([$document]);
 
+        $this->getEventManager()
+             ->trigger(__FUNCTION__ . '.post', $this, ['document' => $document, 'object' => $object]);
+
         if (! $response->isOk()) {
-            $message = sprintf('Error deleting document: %s', $response->getError());
-            $this->logger->err($message, ['document' => $document]);
-            throw new Exception\RuntimeException($message);
+            $this->getEventManager()
+                 ->trigger(__FUNCTION__ . '.error', $this, ['response' => $response]);
+
+            throw new Exception\RuntimeException($response->getError());
         }
     }
 }

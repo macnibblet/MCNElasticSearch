@@ -7,10 +7,12 @@
 
 namespace MCNElasticSearch\Service;
 
+use Zend\EventManager\EventsCapableInterface;
+
 /**
  * Interface DocumentServiceInterface
  */
-interface DocumentServiceInterface
+interface DocumentServiceInterface extends EventsCapableInterface
 {
     /**
      * @param $object

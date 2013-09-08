@@ -7,19 +7,23 @@
 
 namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
-use Elastica\Result;
-
 /**
  * Class Raw
  */
 class Raw extends AbstractAdapter
 {
     /**
-     * @param Result $object
-     * @return mixed
+     * Returns an collection of items for a page.
+     *
+     * @param  int $offset Page offset
+     * @param  int $itemCountPerPage Number of items per page
+     * @return array
      */
-    public function hydrate(Result $object)
+    public function getItems($offset, $itemCountPerPage)
     {
-        return $object->getHit();
+        $this->query->setFrom($offset);
+        $this->query->setSize($itemCountPerPage);
+
+        return $this->searchable->search($this->query)->getResults();
     }
 }

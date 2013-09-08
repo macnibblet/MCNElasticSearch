@@ -7,7 +7,9 @@
 
 namespace MCNElasticSearch\ServiceFactory;
 
+use Elastica\Client;
 use MCNElasticSearch\Service\DocumentService;
+use MCNElasticSearch\Service\MetadataService;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -25,9 +27,9 @@ class DocumentServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         return new DocumentService(
-            $serviceLocator->get('es.service.configuration'),
-            $serviceLocator->get('hydratorManager'),
-            $serviceLocator->get('es.log')
+            $serviceLocator->get(Client::class),
+            $serviceLocator->get(MetadataService::class),
+            $serviceLocator->get('hydratorManager')
         );
     }
 }

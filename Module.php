@@ -52,16 +52,6 @@ class Module implements ConfigProviderInterface, AutoloaderProviderInterface, Se
      */
     public function getServiceConfig()
     {
-        return [
-            'factories' => [
-
-                /**
-                 * Options
-                 */
-                'es.options.connection' => function (ServiceManager $manager) {
-                    return new Options\ConnectOptions($manager->get('Config')['MCNElasticSearch']['connection']);
-                }
-            ]
-        ];
+        return [];
     }
 }

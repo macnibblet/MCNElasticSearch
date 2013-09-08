@@ -8,15 +8,13 @@
 namespace MCNElasticSearch\ServiceFactory;
 
 use Elastica\Client;
-use MCNElasticSearch\Service\MappingService;
-use MCNElasticSearch\Service\MetadataService;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class MappingServiceFactory
+ * Class ClientFactory
  */
-class MappingServiceFactory implements FactoryInterface
+class ClientFactory implements FactoryInterface
 {
     /**
      * Create service
@@ -26,9 +24,10 @@ class MappingServiceFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new MappingService(
-            $serviceLocator->get(Client::class),
-            $serviceLocator->get(MetadataService::class)
-        );
+        $config = $serviceLocator->get('Config')['MCNElasticSearch'];
+
+        $client = new Client();
+        $client->setConfig($config['client']);
+        return $client;
     }
 }

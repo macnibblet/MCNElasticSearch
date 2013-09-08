@@ -6,9 +6,12 @@
  */
 
 namespace MCNElasticSearch\Service;
+use Elastica\Client;
 use Elastica\Type\Mapping;
 use Elastica\Type;
 use MCNElasticSearch\Options\TypeMappingOptions;
+use Zend\EventManager\EventManagerAwareTrait;
+use Zend\EventManager\EventManagerInterface;
 use Zend\Log\Logger;
 use Zend\Stdlib\Hydrator\ClassMethods;
 
@@ -17,33 +20,31 @@ use Zend\Stdlib\Hydrator\ClassMethods;
  */
 class MappingService implements MappingServiceInterface
 {
-    /**
-     * @var ConfigurationService
-     */
-    protected $configuration;
-    /**
-     * @var \Zend\Log\Logger
-     */
-    private $logger;
+    use EventManagerAwareTrait;
 
     /**
-     * @param ConfigurationService $configuration
-     * @param \Zend\Log\Logger $logger
+     * @var \Elastica\Client
      */
-    public function __construct(ConfigurationService $configuration, Logger $logger)
+    protected $client;
+
+    /**
+     * @var MetadataService
+     */
+    protected $metadata;
+
+    /**
+     * @param \Elastica\Client $client
+     * @param MetadataService $metadata
+     */
+    public function __construct(Client $client, MetadataService $metadata)
     {
-        $this->logger        = $logger;
-        $this->configuration = $configuration;
+        $this->client   = $client;
+        $this->metadata = $metadata;
     }
 
-    /**
-     * @param array $types
-     * @throws Exception\RuntimeException
-     */
-    public function build(array $types = null)
+    public function build(array $types = [])
     {
-        $client   = $this->configuration->getClient();
-        $mappings = $this->configuration->getAllTypeMappings();
+        $mappings = $this->metadata->getAllTypeMappings();
 
         if ($types !== null) {
             array_filter($mappings, function(TypeMappingOptions $t) use ($types) {
@@ -56,25 +57,27 @@ class MappingService implements MappingServiceInterface
         /** @var $options \MCNElasticSearch\Options\TypeMappingOptions */
         foreach ($mappings as $options) {
 
-            $type = $client->getIndex($options->getIndex())
-                           ->getType($options->getName());
+            $type = $this->client->getIndex($options->getIndex())
+                                 ->getType($options->getName());
 
             $mapping = new Mapping($type);
             $hydrator->hydrate($options->toArray(), $mapping);
 
             $response = $mapping->send();
             if (! $response->isOk()) {
-                $message = sprintf('Error updating "%s" mapping: %s', $options->getName(), $response->getError());
-                $this->logger->err($message, ['mapping' => $mapping, 'options' => $options]);
-                throw new Exception\RuntimeException($message);
+                $this->getEventManager()->trigger(__FUNCTION__ . '.error', $this, [ 'response' => $response ]);
+                throw new Exception\RuntimeException(
+                    sprintf(
+                        'Error updating "%s" mapping: %s', $options->getName(), $response->getError()
+                    )
+                );
             }
         }
     }
 
-    public function delete(array $types = null)
+    public function delete(array $types = [])
     {
-        $client   = $this->configuration->getClient();
-        $mappings = $this->configuration->getAllTypeMappings();
+        $mappings = $this->metadata->getAllTypeMappings();
 
         if ($types !== null) {
             array_filter($mappings, function(TypeMappingOptions $t) use ($types) {
@@ -85,11 +88,15 @@ class MappingService implements MappingServiceInterface
         foreach ($mappings as $options) {
 
             // Delete the type
-            $response = $client->getIndex($options->getIndex())->getType($options->getName())->delete();
+            $response = $this->client->getIndex($options->getIndex())->getType($options->getName())->delete();
+
             if (! $response->isOk()) {
-                $message = sprintf('Error deleting "%s"', $options->getName());
-                $this->logger->err($message, ['options' => $options]);
-                throw new Exception\RuntimeException($message);
+                $this->getEventManager()->trigger(__FUNCTION__ . '.error', $this, [ 'response' => $response ]);
+                throw new Exception\RuntimeException(
+                    sprintf(
+                        'Error deleting "%s" mapping: %s', $options->getName(), $response->getError()
+                    )
+                );
             }
         }
     }

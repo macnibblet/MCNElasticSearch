@@ -9,9 +9,11 @@ namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Elastica\Result;
+use Elastica\Query;
+use Elastica\SearchableInterface;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Service\Exception;
+use Zend\Paginator\Adapter\AdapterInterface;
 
 /**
  * Class Doctrine
@@ -21,12 +23,7 @@ class Doctrine extends AbstractAdapter
     /**
      * @var \Doctrine\Common\Collections\Selectable
      */
-    protected $selectable;
-
-    /**
-     * @var array
-     */
-    protected $preservedKeys = ['sort'];
+    protected $repository;
 
     /**
      * @var \MCNElasticSearch\Options\ObjectMetadataOptions
@@ -34,72 +31,60 @@ class Doctrine extends AbstractAdapter
     protected $objectMetadata;
 
     /**
-     * @param Selectable $selectable
+     * @param \Doctrine\Common\Collections\Selectable         $repository
+     * @param \MCNElasticSearch\Options\ObjectMetadataOptions $objectMetadata
      */
-    public function setRepository(Selectable $selectable)
+    public function __construct(Selectable $repository, ObjectMetadataOptions $objectMetadata)
     {
-        $this->selectable = $selectable;
-    }
-
-    /**
-     * @param ObjectMetadataOptions $objectMetadata
-     */
-    public function setObjectMetadata(ObjectMetadataOptions $objectMetadata)
-    {
+        $this->repository     = $repository;
         $this->objectMetadata = $objectMetadata;
     }
 
     /**
-     * @param Result $object
+     * Returns an collection of items for a page.
      *
-     * @return mixed
-     */
-    public function hydrate(Result $object)
-    {
-        throw new Exception\LogicException('Should never be called');
-    }
-
-    /**
      * @param int $offset
      * @param int $itemCountPerPage
      *
-     * @return array|\Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getItems($offset, $itemCountPerPage)
     {
         $this->query->setFrom($offset);
         $this->query->setSize($itemCountPerPage);
 
-        $data    = [];
-        $results = $this->doRequest()->getResults();
+        $dataSet = [];
+        $results = $this->searchable->search($this->query);
 
+        /** @var $result \Elastica\Result */
         foreach ($results as $result) {
-
-            $tmp = [];
-            foreach ($this->preservedKeys as $key) {
-                $tmp[$key] = $result->getParam($key);
+            $data = [];
+            foreach ($result->getHit() as $key => $value) {
+                if (substr($key, 0, 1) != '_') {
+                    $data[$key] = $value;
+                }
             }
 
-            $data[$result->getId()] = $tmp;
+            $dataSet[$result->getId()] = $data;
         }
 
         $criteria = Criteria::create();
         $criteria->where(
             $criteria->expr()->in(
                 $this->objectMetadata->getId(),
-                array_keys($data)
+                array_keys($dataSet)
             )
        );
 
-        $items  = $this->selectable->matching($criteria);
+        $items  = $this->repository->matching($criteria);
         $return = [];
 
         foreach ($items as $item) {
 
             $id = $item[$this->objectMetadata->getId()];
 
-            if (! empty($data[$id])) {
-                $return[] = [$item] + $data[$id];
+            if (! empty($dataSet[$id])) {
+                $return[] = [$item] + $dataSet[$id];
             } else {
                 $return[] = $item;
             }

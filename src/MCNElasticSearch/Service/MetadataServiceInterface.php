@@ -8,15 +8,10 @@
 namespace MCNElasticSearch\Service;
 
 /**
- * Interface ConfigurationServiceInterface
+ * Interface MetadataServiceInterface
  */
-interface ConfigurationServiceInterface
+interface MetadataServiceInterface
 {
-    /**
-     * @return \Elastica\Client
-     */
-    public function getClient();
-
     /**
      * @param string $className
      *

@@ -6,11 +6,12 @@
  */
 
 namespace MCNElasticSearch\Service;
+use Zend\EventManager\EventsCapableInterface;
 
 /**
  * Interface MappingServiceInterface
  */
-interface MappingServiceInterface
+interface MappingServiceInterface extends EventsCapableInterface
 {
     /**
      * Build the mapping of all or a list of given types
@@ -19,7 +20,7 @@ interface MappingServiceInterface
      *
      * @return void
      */
-    public function build(array $types = null);
+    public function build(array $types = []);
 
     /**
      * Delete the entire mapping or a specific part
@@ -28,5 +29,5 @@ interface MappingServiceInterface
      *
      * @return void
      */
-    public function delete(array $types = null);
+    public function delete(array $types = []);
 }

@@ -4,39 +4,45 @@
  *
  * @copyright PMG Media Group AB
  */
+
+use MCNElasticSearch\Service\DocumentService;
+use MCNElasticSearch\Service\MappingService;
+use MCNElasticSearch\Service\SearchService;
+
 return [
     'MCNElasticSearch' => [
 
         /**
          * Client configuration
          */
-        'connection' => [],
+        'client' => [],
 
         /**
-         * List of object mappings
+         * Metadata configuration
          */
-        'object_metadata' => [],
+        'metadata' => [
 
-        /**
-         * List of types E.g "SQL Tables"
-         */
-        'types' => []
-    ],
+            /**
+             * List of object mappings
+             */
+            'objects' => [],
 
-    /**
-     *
-     */
-    'log' => [
-        'es.log' => [
-            'writers' => [
-                [
-                    'name'    => 'stream',
-                    'options' => [
-                        'mode'   => 'a+',
-                        'stream' => 'data/logs/elastic-search.log'
-                    ]
-                ]
-            ]
+            /**
+             * List of types E.g "SQL Tables"
+             */
+            'types' => []
+        ],
+
+        DocumentService::class => [
+            'listeners' => []
+        ],
+
+        SearchService::class => [
+            'listeners' => []
+        ],
+
+        MappingService::class => [
+            'listeners' => []
         ]
     ],
 

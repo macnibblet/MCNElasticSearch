@@ -8,25 +8,24 @@
 namespace MCNElasticSearch\Service;
 
 use Elastica\Query;
+use Zend\EventManager\EventsCapableInterface;
 
 /**
  * Interface SearchServiceInterface
  */
-interface SearchServiceInterface
+interface SearchServiceInterface extends EventsCapableInterface
 {
     const HYDRATE_RAW             = 'raw';
-    const HYDRATE_ARRAY           = 'array';
-    const HYDRATE_OBJECT          = 'object';
     const HYDRATE_DOCTRINE_OBJECT = 'objectManager';
 
     /**
      * Perform a search
      *
      * @param string          $objectClassName
-     * @param \Elastica\Query $criteria
+     * @param \Elastica\Query $query
      * @param string          $hydration
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function search($objectClassName, Query $criteria, $hydration = self::HYDRATE_OBJECT);
+    public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW);
 }

@@ -5,9 +5,15 @@
  * @copyright PMG Media Group AB
  */
 
+use Elastica\Client;
+use MCNElasticSearch\Service\DocumentService;
+use MCNElasticSearch\Service\MappingService;
+use MCNElasticSearch\Service\MetadataService;
+use MCNElasticSearch\Service\SearchService;
+use MCNElasticSearch\ServiceFactory\ClientFactory;
 use MCNElasticSearch\ServiceFactory\MappingServiceFactory;
 use MCNElasticSearch\ServiceFactory\DocumentServiceFactory;
-use MCNElasticSearch\ServiceFactory\ConfigurationServiceFactory;
+use MCNElasticSearch\ServiceFactory\MetadataServiceFactory;
 use MCNElasticSearch\ServiceFactory\SearchServiceFactory;
 
 /**
@@ -15,9 +21,10 @@ use MCNElasticSearch\ServiceFactory\SearchServiceFactory;
  */
 return [
     'factories' => [
-        'es.service.search'        => SearchServiceFactory::class,
-        'es.service.mapping'       => MappingServiceFactory::class,
-        'es.service.document'      => DocumentServiceFactory::class,
-        'es.service.configuration' => ConfigurationServiceFactory::class
+        Client::class          => ClientFactory::class,
+        SearchService::class   => SearchServiceFactory::class,
+        MappingService::class  => MappingServiceFactory::class,
+        DocumentService::class => DocumentServiceFactory::class,
+        MetadataService::class => MetadataServiceFactory::class
     ]
 ];

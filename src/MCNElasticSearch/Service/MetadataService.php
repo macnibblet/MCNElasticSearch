@@ -11,15 +11,10 @@ use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Options\TypeMappingOptions;
 
 /**
- * Class ConfigurationService
+ * Class MetadataService
  */
-class ConfigurationService implements ConfigurationServiceInterface
+class MetadataService implements MetadataServiceInterface
 {
-    /**
-     * @var \Elastica\Client
-     */
-    protected $client;
-
     /**
      * @var \MCNElasticSearch\Options\TypeMappingOptions[]
      */
@@ -33,7 +28,7 @@ class ConfigurationService implements ConfigurationServiceInterface
     /**
      * @param array $configuration
      */
-    public function __construct(array $configuration)
+    public function __construct(array $configuration = [])
     {
         $this->setConfiguration($configuration);
     }
@@ -43,15 +38,11 @@ class ConfigurationService implements ConfigurationServiceInterface
      */
     public function setConfiguration(array $configuration)
     {
-        if (isset($configuration['client'])) {
-            $this->getClient()->setConfig($configuration['client']);
-        }
-
-        if (isset($configuration['object_metadata'])) {
+        if (isset($configuration['objects'])) {
 
             // reset
             $this->objectMetadata = [];
-            foreach ($configuration['object_metadata'] as $className => $config) {
+            foreach ($configuration['objects'] as $className => $config) {
                 $this->objectMetadata[$className] = new ObjectMetadataOptions($config);
                 $this->objectMetadata[$className]->setObjectClassName($className);
             }
@@ -66,19 +57,6 @@ class ConfigurationService implements ConfigurationServiceInterface
                 $this->typeMapping[$typeName]->setName($typeName);
             }
         }
-    }
-
-
-    /**
-     * @return \Elastica\Client
-     */
-    public function getClient()
-    {
-        if ($this->client === null) {
-            $this->client = new Client();
-        }
-
-        return $this->client;
     }
 
     /**
