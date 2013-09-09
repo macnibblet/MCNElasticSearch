@@ -57,28 +57,28 @@ class ObjectMetadataOptions extends AbstractOptions
     /**
      * Type name
      *
-     * @var string
+     * @var string|null
      */
     protected $type;
 
     /**
      * Index name
      *
-     * @var string
+     * @var string|null
      */
     protected $index;
 
     /**
      * The name of the hydrator to load from they hydrator manager
      *
-     * @var string
+     * @var string|null
      */
     protected $hydrator;
 
     /**
      * FQCN of the object class anem
      *
-     * @var string
+     * @var string|null
      */
     protected $objectClassName;
 
@@ -87,7 +87,7 @@ class ObjectMetadataOptions extends AbstractOptions
      */
     public function setHydrator($hydrator)
     {
-        $this->hydrator = $hydrator;
+        $this->hydrator = (string) $hydrator;
     }
 
     /**
@@ -103,7 +103,7 @@ class ObjectMetadataOptions extends AbstractOptions
      */
     public function setId($id)
     {
-        $this->id = $id;
+        $this->id = (string) $id;
     }
 
     /**
@@ -116,9 +116,15 @@ class ObjectMetadataOptions extends AbstractOptions
 
     /**
      * @param string $objectClassName
+     *
+     * @throws Exception\InvalidArgumentException If the given class name cannot be found
      */
     public function setObjectClassName($objectClassName)
     {
+        if (! class_exists($objectClassName)) {
+            throw new Exception\InvalidArgumentException(sprintf('Class %s could not be found', $objectClassName));
+        }
+
         $this->objectClassName = $objectClassName;
     }
 
@@ -135,7 +141,7 @@ class ObjectMetadataOptions extends AbstractOptions
      */
     public function setType($type)
     {
-        $this->type = $type;
+        $this->type = (string)$type;
     }
 
     /**
@@ -151,7 +157,7 @@ class ObjectMetadataOptions extends AbstractOptions
      */
     public function setIndex($index)
     {
-        $this->index = $index;
+        $this->index = (string)$index;
     }
 
     /**

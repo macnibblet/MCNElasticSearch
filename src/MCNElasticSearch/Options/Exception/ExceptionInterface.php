@@ -38,58 +38,11 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
-
-
-use Elastica\Query;
-use Elastica\SearchableInterface;
-use Zend\Paginator\Adapter\AdapterInterface;
+namespace MCNElasticSearch\Options\Exception;
 
 /**
- * Class AbstractAdapter
+ * Interface ExceptionInterface
  */
-abstract class AbstractAdapter implements AdapterInterface
+interface ExceptionInterface
 {
-    /**
-     * @var \Elastica\Query
-     */
-    protected $query;
-
-    /**
-     * @var \Elastica\SearchableInterface
-     */
-    protected $searchable;
-
-    /**
-     * @var int
-     */
-    protected $count;
-
-    /**
-     * @param SearchableInterface $searchable
-     */
-    public function setSearchable(SearchableInterface $searchable)
-    {
-        $this->searchable = $searchable;
-    }
-
-    /**
-     * @param Query $query
-     */
-    public function setQuery(Query $query)
-    {
-        $this->query = $query;
-    }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function count()
-    {
-        if ($this->count === null) {
-            $this->count = $this->searchable->count($this->query);
-        }
-
-        return $this->count;
-    }
 }

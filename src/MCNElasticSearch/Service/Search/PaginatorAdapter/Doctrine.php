@@ -45,10 +45,8 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Elastica\Query;
 use Elastica\ResultSet;
-use Elastica\SearchableInterface;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Service\Exception;
-use Zend\Paginator\Adapter\AdapterInterface;
 
 /**
  * Class Doctrine
