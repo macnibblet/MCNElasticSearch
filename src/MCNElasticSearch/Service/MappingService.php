@@ -41,6 +41,7 @@
 namespace MCNElasticSearch\Service;
 
 use Elastica\Client;
+use Elastica\Exception\ResponseException;
 use Elastica\Type\Mapping;
 use Elastica\Type;
 use MCNElasticSearch\Options\TypeMappingOptions;
@@ -76,17 +77,24 @@ class MappingService implements MappingServiceInterface
         $this->metadata = $metadata;
     }
 
-    public function build(array $types = [])
+    /**
+     * Creates the mapping of all or a list of given types
+     *
+     * Be aware that to properly handle the response you must listen to the create event
+     *
+     * @param array $types List of type names to build
+     *
+     * @return void
+     */
+    public function create(array $types = [])
     {
         $mappings = $this->metadata->getAllTypeMappings();
 
-        if ($types !== null) {
+        if (! empty($types)) {
             array_filter($mappings, function(TypeMappingOptions $t) use ($types) {
                 return in_array($t->getName(), $types);
             });
         }
-
-        $hydrator = new ClassMethods();
 
         /** @var $options \MCNElasticSearch\Options\TypeMappingOptions */
         foreach ($mappings as $options) {
@@ -94,26 +102,37 @@ class MappingService implements MappingServiceInterface
             $type = $this->client->getIndex($options->getIndex())
                                  ->getType($options->getName());
 
+            // this is only the basic mapping *required*
             $mapping = new Mapping($type);
-            $hydrator->hydrate($options->toArray(), $mapping);
+            $mapping->setSource($options->getSource());
+            $mapping->setProperties($options->getProperties());
 
-            $response = $mapping->send();
-            if (! $response->isOk()) {
-                $this->getEventManager()->trigger(__FUNCTION__ . '.error', $this, [ 'response' => $response ]);
-                throw new Exception\RuntimeException(
-                    sprintf(
-                        'Error updating "%s" mapping: %s', $options->getName(), $response->getError()
-                    )
-                );
+            try {
+                $response = $mapping->send();
+            } catch (ResponseException $exception) {
+                $response = $exception->getResponse();
+            } finally {
+
+                $this->getEventManager()
+                     ->trigger('create', $this, compact('mapping', 'response', 'options'));
             }
         }
     }
 
+    /**
+     * Delete the entire mapping or a specific part
+     *
+     * Be aware that to properly handle the response you must listen to the delete event
+     *
+     * @param array $types
+     *
+     * @return void
+     */
     public function delete(array $types = [])
     {
         $mappings = $this->metadata->getAllTypeMappings();
 
-        if ($types !== null) {
+        if (! empty($types)) {
             array_filter($mappings, function(TypeMappingOptions $t) use ($types) {
                 return in_array($t->getName(), $types);
             });
@@ -121,16 +140,15 @@ class MappingService implements MappingServiceInterface
 
         foreach ($mappings as $options) {
 
-            // Delete the type
-            $response = $this->client->getIndex($options->getIndex())->getType($options->getName())->delete();
-
-            if (! $response->isOk()) {
-                $this->getEventManager()->trigger(__FUNCTION__ . '.error', $this, [ 'response' => $response ]);
-                throw new Exception\RuntimeException(
-                    sprintf(
-                        'Error deleting "%s" mapping: %s', $options->getName(), $response->getError()
-                    )
-                );
+            $type = $this->client->getIndex($options->getIndex())
+                                 ->getType($options->getName());
+            try {
+                $response = $type->delete();
+            } catch (ResponseException $exception) {
+                $response = $exception->getResponse();
+            } finally {
+                $this->getEventManager()
+                    ->trigger('delete', $this, compact('type', 'response', 'options'));
             }
         }
     }

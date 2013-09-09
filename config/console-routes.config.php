@@ -1,4 +1,6 @@
 <?php
+use MCNElasticSearch\Controller\MappingController;
+
 /**
  * Copyright (c) 2011-2013 Antoine Hedgecock.
  * All rights reserved.
@@ -43,19 +45,19 @@ return [
             'route'    => 'es mapping delete [-y]',
             'defaults' => [
 
-                'controller' => 'es.mapping',
-                'action'     => 'delete-mapping',
+                'controller' => MappingController::class,
+                'action'     => 'delete',
             ]
         ]
     ],
 
     'es-build-mapping' => [
         'options' => [
-            'route'    => 'es mapping build',
+            'route'    => 'es mapping create',
             'defaults' => [
 
-                'controller' => 'es.mapping',
-                'action'     => 'build-mapping',
+                'controller' => MappingController::class,
+                'action'     => 'create',
             ]
         ]
     ],

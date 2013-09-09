@@ -45,4 +45,18 @@ namespace MCNElasticSearch\Service\Exception;
  */
 class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
 {
+    /**
+     * @param mixed $object
+     *
+     * @return InvalidArgumentException
+     */
+    public static function invalidClass($object)
+    {
+        return new static(
+            sprintf(
+                'Object of type %s is invalid; Must be a valid class',
+                (is_object($object) ? get_class($object) : gettype($object))
+            )
+        );
+    }
 }

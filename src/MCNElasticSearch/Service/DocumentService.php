@@ -89,10 +89,7 @@ class DocumentService implements DocumentServiceInterface
     protected function transform($object)
     {
         if (! is_object($object)) {
-            throw new Exception\InvalidArgumentException(sprintf(
-                'Object of type %s is invalid; Must be a valid class',
-                (is_object($object) ? get_class($object) : gettype($object))
-            ));
+            throw Exception\InvalidArgumentException::invalidClass($object);
         }
 
         /** @var \Zend\Stdlib\Hydrator\AbstractHydrator $hydrator */
@@ -155,14 +152,10 @@ class DocumentService implements DocumentServiceInterface
      */
     public function update($object)
     {
-        $document    = $this->transform($object);
-        $eventParams = [
-            'document' => $document,
-            'object'   => $object
-        ];
+        $document = $this->transform($object);
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, $eventParams);
+             ->trigger(__FUNCTION__ . '.pre', $this, compact('document', 'object'));
 
         $response = $this->client->updateDocument(
             $document->getId(),
@@ -172,7 +165,7 @@ class DocumentService implements DocumentServiceInterface
        );
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, $eventParams + ['response' => $response]);
+             ->trigger(__FUNCTION__ . '.post', $this, compact('document', 'object', 'response'));
 
         if (! $response->isOk()) {
             throw new Exception\RuntimeException($response->getError());
@@ -194,19 +187,15 @@ class DocumentService implements DocumentServiceInterface
      */
     public function delete($object)
     {
-        $document    = $this->transform($object);
-        $eventParams = [
-            'document' => $document,
-            'object'   => $object
-        ];
+        $document = $this->transform($object);
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, $eventParams);
+             ->trigger(__FUNCTION__ . '.pre', $this, compact('document', 'object'));
 
         $response = $this->client->deleteDocuments([$document]);
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, $eventParams + ['response' => $response]);
+             ->trigger(__FUNCTION__ . '.post', $this, compact('document', 'object', 'response'));
 
         if (! $response->isOk()) {
             throw new Exception\RuntimeException($response->getError());

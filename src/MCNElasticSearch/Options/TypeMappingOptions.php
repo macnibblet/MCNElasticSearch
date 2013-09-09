@@ -50,31 +50,24 @@ class TypeMappingOptions extends AbstractOptions
     /**
      * Type name
      *
-     * @var string
+     * @var string|null
      */
     protected $name;
 
     /**
-     * @var string
+     * @var string|array
      */
-    protected $id;
+    protected $id = 'id';
 
     /**
      * @var string
      */
-    protected $index;
+    protected $index = 'default';
 
     /**
      * @var bool
      */
     protected $source = ['enabled' => true];
-
-    /**
-     * If the id is a path
-     *
-     * @var bool
-     */
-    protected $idIsPath = false;
 
     /**
      * @var array
@@ -86,39 +79,7 @@ class TypeMappingOptions extends AbstractOptions
      */
     public function setId($id)
     {
-        $this->id = $id;
-    }
-
-    /**
-     * @param string $index
-     */
-    public function setIndex($index)
-    {
-        $this->index = $index;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIndex()
-    {
-        return $this->index;
-    }
-
-    /**
-     * @param boolean $source
-     */
-    public function setSource(array $source)
-    {
-        $this->source = $source;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getSource()
-    {
-        return $this->source;
+        $this->id = (string) $id;
     }
 
     /**
@@ -130,19 +91,35 @@ class TypeMappingOptions extends AbstractOptions
     }
 
     /**
-     * @param boolean $idIsPath
+     * @param string $index
      */
-    public function setIdIsPath($idIsPath)
+    public function setIndex($index)
     {
-        $this->idIsPath = $idIsPath;
+        $this->index = (string) $index;
     }
 
     /**
-     * @return boolean
+     * @return string
      */
-    public function getIdIsPath()
+    public function getIndex()
     {
-        return $this->idIsPath;
+        return $this->index;
+    }
+
+    /**
+     * @param array $source
+     */
+    public function setSource(array $source)
+    {
+        $this->source = $source;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 
     /**
@@ -150,7 +127,7 @@ class TypeMappingOptions extends AbstractOptions
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = (string) $name;
     }
 
     /**
@@ -164,7 +141,7 @@ class TypeMappingOptions extends AbstractOptions
     /**
      * @param array $properties
      */
-    public function setProperties($properties)
+    public function setProperties(array $properties)
     {
         $this->properties = $properties;
     }

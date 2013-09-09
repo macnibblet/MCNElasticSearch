@@ -40,8 +40,10 @@
 
 namespace MCNElasticSearch\Controller;
 
+use Zend\Console\ColorInterface;
 use Zend\Console\Prompt;
 use MCNElasticSearch\Service\MappingServiceInterface;
+use Zend\EventManager\Event;
 
 /**
  * Class MappingController
@@ -61,18 +63,37 @@ class MappingController extends AbstractCliController
         $this->service = $service;
     }
 
+    public function progress(Event $event)
+    {
+        /**
+         * @var $options  \MCNElasticSearch\Options\TypeMappingOptions
+         * @var $response \Elastica\Response
+         */
+        $options  = $event->getParam('options');
+        $response = $event->getParam('response');
+
+        if ($response->isOk()) {
+            $this->console->write('[Success] ', ColorInterface::GREEN);
+            $this->console->writeLine($options->getName());
+        } else {
+            $this->console->write('[Error] ', ColorInterface::RED);
+            $this->console->writeLine(sprintf('%s: %s', $options->getName(), $response->getError()));
+        }
+    }
+
     /**
      * Build the schema
      */
-    public function buildMappingAction()
+    public function createAction()
     {
-        $this->service->build();
+        $this->service->getEventManager()->attach('create', [$this, 'progress']);
+        $this->service->create();
     }
 
     /**
      * Delete the entire mapping
      */
-    public function deleteMappingAction()
+    public function deleteAction()
     {
         $skipPrompt = $this->getRequest()->getParam('y', false);
 
@@ -85,6 +106,7 @@ class MappingController extends AbstractCliController
             }
         }
 
+        $this->service->getEventManager()->attach('delete', [$this, 'progress']);
         $this->service->delete();
     }
 }

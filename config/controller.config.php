@@ -38,10 +38,11 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
+use MCNElasticSearch\Controller\MappingController;
 use MCNElasticSearch\ControllerFactory\MappingControllerFactory;
 
 return [
     'factories' => [
-        'es.mapping' => MappingControllerFactory::class
+        MappingController::class => MappingControllerFactory::class
     ]
 ];

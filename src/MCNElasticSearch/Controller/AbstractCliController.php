@@ -63,6 +63,7 @@ abstract class AbstractCliController extends AbstractActionController
      *
      * @param MvcEvent $e
      *
+     * @throws \LogicException
      * @return mixed
      */
     public function onDispatch(MvcEvent $e)
@@ -71,6 +72,7 @@ abstract class AbstractCliController extends AbstractActionController
             throw new \LogicException('Request may only be done via the CLI');
         }
 
+        $this->console = $this->getServiceLocator()->get('console');
         return parent::onDispatch($e);
     }
 }

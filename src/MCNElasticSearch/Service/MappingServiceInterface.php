@@ -48,13 +48,13 @@ use Zend\EventManager\EventsCapableInterface;
 interface MappingServiceInterface extends EventsCapableInterface
 {
     /**
-     * Build the mapping of all or a list of given types
+     * Creates the mapping of all or a list of given types
      *
      * @param array $types List of type names to build
      *
      * @return void
      */
-    public function build(array $types = []);
+    public function create(array $types = []);
 
     /**
      * Delete the entire mapping or a specific part
