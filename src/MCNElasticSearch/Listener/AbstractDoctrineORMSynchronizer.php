@@ -41,21 +41,21 @@
 namespace MCNElasticSearch\Listener;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use MCNElasticSearch\Service\DocumentServiceInterface;
 
 /**
- * Class AbstractObjectSynchronizer
+ * Class AbstractDoctrineORMSynchronizer
  *
- * A very simple abstract object synchronizer
+ * Provides a very simple API to extend from to synchronize objects.
  */
-abstract class AbstractObjectSynchronizer implements EventSubscriber
+abstract class AbstractDoctrineORMSynchronizer implements EventSubscriber
 {
     /**
      * @var \MCNElasticSearch\Service\DocumentServiceInterface
      */
-    private $service;
+    protected $service;
 
     /**
      * @param DocumentServiceInterface $service
