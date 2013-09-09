@@ -79,7 +79,7 @@ return [
         ]
     ],
 
-    'console'         => ['router' => ['routes' => include __DIR__ . '/routes.config.php']],
+    'console'         => ['router' => ['routes' => include __DIR__ . '/console-routes.config.php']],
     'service_manager' => include __DIR__ . '/service.config.php',
     'controllers'     => include __DIR__ . '/controller.config.php'
 ];
