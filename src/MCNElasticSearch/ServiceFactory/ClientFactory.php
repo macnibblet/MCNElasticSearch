@@ -47,7 +47,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Class ClientFactory
  */
-class ClientFactory implements FactoryInterface
+class ClientFactory extends AbstractFactory
 {
     /**
      * Create service
@@ -57,10 +57,6 @@ class ClientFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $config = $serviceLocator->get('Config')['MCNElasticSearch'];
-
-        $client = new Client();
-        $client->setConfig($config['client']);
-        return $client;
+        return new Client($this->getConfig($serviceLocator)['client']);
     }
 }

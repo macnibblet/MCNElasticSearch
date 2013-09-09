@@ -49,7 +49,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Class MappingServiceFactory
  */
-class MappingServiceFactory implements FactoryInterface
+class MappingServiceFactory extends AbstractFactory
 {
     /**
      * Create service
@@ -59,9 +59,18 @@ class MappingServiceFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new MappingService(
+        $service = new MappingService(
             $serviceLocator->get(Client::class),
             $serviceLocator->get(MetadataService::class)
         );
+
+        $listeners = $this->getConfig($serviceLocator)[MappingService::class]['listeners'];
+        foreach ($listeners as $listener) {
+            $service->getEventManager()->attach(
+                $serviceLocator->get($listener)
+            );
+        }
+
+        return $service;
     }
 }

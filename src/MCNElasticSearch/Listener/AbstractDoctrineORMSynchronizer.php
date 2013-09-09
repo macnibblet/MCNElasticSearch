@@ -121,5 +121,3 @@ abstract class AbstractDoctrineORMSynchronizer implements EventSubscriber
         }
     }
 }
-
-

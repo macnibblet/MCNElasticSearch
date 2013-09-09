@@ -49,7 +49,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Class SearchServiceFactory
  */
-class SearchServiceFactory implements FactoryInterface
+class SearchServiceFactory extends AbstractFactory
 {
     /**
      * Create service
@@ -59,10 +59,19 @@ class SearchServiceFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new SearchService(
+        $service = new SearchService(
             $serviceLocator->get(Client::class),
             $serviceLocator->get(MetadataService::class),
             $serviceLocator->get('objectManager')
         );
+
+        $listeners = $this->getConfig($serviceLocator)[SearchService::class]['listeners'];
+        foreach ($listeners as $listener) {
+            $service->getEventManager()->attach(
+                $serviceLocator->get($listener)
+            );
+        }
+
+        return $service;
     }
 }

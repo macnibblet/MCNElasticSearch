@@ -40,38 +40,29 @@
 
 namespace MCNElasticSearch\ServiceFactory;
 
-use Elastica\Client;
-use MCNElasticSearch\Service\DocumentService;
-use MCNElasticSearch\Service\MetadataService;
+use Zend\Di\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class DocumentServiceFactory
+ * Class AbstractFactory
  */
-class DocumentServiceFactory extends AbstractFactory
+abstract class AbstractFactory implements FactoryInterface
 {
     /**
-     * Create service
+     * Get the elastic search configuration
      *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return mixed
+     * @param ServiceLocatorInterface $sl
+     *
+     * @return array
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    protected function getConfig(ServiceLocatorInterface $sl)
     {
-        $service = new DocumentService(
-            $serviceLocator->get(Client::class),
-            $serviceLocator->get(MetadataService::class),
-            $serviceLocator->get('hydratorManager')
-        );
+        $config = $sl->get('Config');
 
-        $listeners = $this->getConfig($serviceLocator)[DocumentService::class]['listeners'];
-        foreach ($listeners as $listener) {
-            $service->getEventManager()->attach(
-                $serviceLocator->get($listener)
-            );
+        if (! isset($config['MCNElasticSearch'])) {
+            throw new \LogicException('No elastic search configuration could be found');
         }
 
-        return $service;
+        return $config['MCNElasticSearch'];
     }
 }
