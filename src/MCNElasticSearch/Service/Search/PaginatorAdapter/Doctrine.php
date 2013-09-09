@@ -40,9 +40,11 @@
 
 namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Elastica\Query;
+use Elastica\ResultSet;
 use Elastica\SearchableInterface;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Service\Exception;
@@ -86,8 +88,28 @@ class Doctrine extends AbstractAdapter
         $this->query->setFrom($offset);
         $this->query->setSize($itemCountPerPage);
 
+        // Query elastic search
+        $response = $this->searchable->search($this->query);
+
+        $meta  = $this->extractMetaInformation($response);
+        $items = $this->loadFromDoctrine(array_keys($meta));
+
+        return $this->merge($meta, $items);
+    }
+
+    /**
+     * Extract meta information from each result
+     *
+     * When doing queries against elastic search one can aggregate meta information and this is where we extract it
+     * from each result.
+     *
+     * @param \Elastica\ResultSet $results
+     *
+     * @return array
+     */
+    private function extractMetaInformation(ResultSet $results)
+    {
         $dataSet = [];
-        $results = $this->searchable->search($this->query);
 
         /** @var $result \Elastica\Result */
         foreach ($results as $result) {
@@ -101,28 +123,56 @@ class Doctrine extends AbstractAdapter
             $dataSet[$result->getId()] = $data;
         }
 
+        return $dataSet;
+    }
+
+    /**
+     * Get all the objects from doctrine
+     *
+     * @param array $id
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    private function loadFromDoctrine(array $id)
+    {
         $criteria = Criteria::create();
         $criteria->where(
             $criteria->expr()->in(
                 $this->objectMetadata->getId(),
-                array_keys($dataSet)
+                $id
             )
-       );
+        );
 
-        $items  = $this->repository->matching($criteria);
-        $return = [];
+        return $this->repository->matching($criteria);
+    }
 
-        foreach ($items as $item) {
+    /**
+     * Merge meta data and sort
+     *
+     * Merges the meta data if any exists into the result set, and due to the nature of SQL IN we also need to sort
+     * the documents according to the results of the elastic query search
+     *
+     * @param array $meta
+     * @param Collection $items
+     * @return array
+     */
+    private function merge(array $meta, Collection $items)
+    {
+        $result  = [];
+        $sorting = array_keys($meta);
 
+        foreach ($items as $item)
+        {
             $id = $item[$this->objectMetadata->getId()];
 
-            if (! empty($dataSet[$id])) {
-                $return[] = [$item] + $dataSet[$id];
-            } else {
-                $return[] = $item;
+            if (! empty($meta[$id])) {
+                $item = [$item] + $meta[$id];
             }
+
+            $result[array_search($id, $sorting)] = $item;
         }
 
-        return $return;
+        ksort($result);
+        return $result;
     }
 }
