@@ -113,7 +113,6 @@ class DocumentService implements DocumentServiceInterface
      *
      * @triggers add.pre
      * @triggers add.post
-     * @triggers add.error
      *
      * @throws Exception\InvalidArgumentException   If an invalid object is passed
      * @throws Exception\RuntimeException           In case something goes wrong during persisting the document
@@ -122,20 +121,21 @@ class DocumentService implements DocumentServiceInterface
      */
     public function add($object)
     {
-        $document = $this->transform($object);
+        $document    = $this->transform($object);
+        $eventParams = [
+            'document' => $document,
+            'object'   => $object
+        ];
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, ['document' => $document, 'object' => $object]);
+             ->trigger(__FUNCTION__ . '.pre', $this, $eventParams);
 
         $response = $this->client->addDocuments([$document]);
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, ['document' => $document, 'object' => $object]);
+             ->trigger(__FUNCTION__ . '.post', $this, $eventParams + ['response' => $response]);
 
         if (! $response->isOk()) {
-            $this->getEventManager()
-                 ->trigger(__FUNCTION__ . '.error', $this, ['response' => $response]);
-
             throw new Exception\RuntimeException($response->getError());
         }
     }
@@ -147,7 +147,6 @@ class DocumentService implements DocumentServiceInterface
      *
      * @triggers update.pre
      * @triggers update.post
-     * @triggers update.error
      *
      * @throws Exception\InvalidArgumentException If an invalid object is passed
      * @throws Exception\RuntimeException         In case something goes wrong during an update
@@ -156,10 +155,14 @@ class DocumentService implements DocumentServiceInterface
      */
     public function update($object)
     {
-        $document = $this->transform($object);
+        $document    = $this->transform($object);
+        $eventParams = [
+            'document' => $document,
+            'object'   => $object
+        ];
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, ['document' => $document, 'object' => $object]);
+             ->trigger(__FUNCTION__ . '.pre', $this, $eventParams);
 
         $response = $this->client->updateDocument(
             $document->getId(),
@@ -169,37 +172,43 @@ class DocumentService implements DocumentServiceInterface
        );
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, ['document' => $document, 'object' => $object]);
+             ->trigger(__FUNCTION__ . '.post', $this, $eventParams + ['response' => $response]);
 
         if (! $response->isOk()) {
-            $this->getEventManager()
-                 ->trigger(__FUNCTION__ . '.error', $this, ['response' => $response]);
-
             throw new Exception\RuntimeException($response->getError());
         }
     }
 
     /**
-     * @param $object
-     * @throws Exception\RuntimeException
-     * @return mixed
+     * Deletes a document from it's index
+     *
+     * @param mixed $object
+     *
+     * @triggers delete.pre
+     * @triggers delete.post
+     *
+     * @throws Exception\InvalidArgumentException If an invalid object is passed
+     * @throws Exception\RuntimeException         In case something goes wrong during an update
+     *
+     * @return void
      */
     public function delete($object)
     {
-        $document = $this->transform($object);
+        $document    = $this->transform($object);
+        $eventParams = [
+            'document' => $document,
+            'object'   => $object
+        ];
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, ['document' => $document, 'object' => $object]);
+             ->trigger(__FUNCTION__ . '.pre', $this, $eventParams);
 
         $response = $this->client->deleteDocuments([$document]);
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, ['document' => $document, 'object' => $object]);
+             ->trigger(__FUNCTION__ . '.post', $this, $eventParams + ['response' => $response]);
 
         if (! $response->isOk()) {
-            $this->getEventManager()
-                 ->trigger(__FUNCTION__ . '.error', $this, ['response' => $response]);
-
             throw new Exception\RuntimeException($response->getError());
         }
     }

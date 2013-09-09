@@ -49,7 +49,7 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Class Module
  */
-class Module implements ConfigProviderInterface, AutoloaderProviderInterface, ServiceProviderInterface
+class Module implements ConfigProviderInterface, AutoloaderProviderInterface
 {
     /**
      * Return an array for passing to Zend\Loader\AutoloaderFactory.
@@ -75,16 +75,5 @@ class Module implements ConfigProviderInterface, AutoloaderProviderInterface, Se
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
-    }
-
-    /**
-     * Expected to return \Zend\ServiceManager\Config object or array to
-     * seed such an object.
-     *
-     * @return array|\Zend\ServiceManager\Config
-     */
-    public function getServiceConfig()
-    {
-        return [];
     }
 }

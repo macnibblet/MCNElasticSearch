@@ -71,7 +71,6 @@ abstract class AbstractCliController extends AbstractActionController
             throw new \LogicException('Request may only be done via the CLI');
         }
 
-        $this->console = $this->getServiceLocator()->get('console');
         return parent::onDispatch($e);
     }
 }
