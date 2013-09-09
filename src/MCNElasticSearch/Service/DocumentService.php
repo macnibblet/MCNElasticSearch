@@ -118,19 +118,15 @@ class DocumentService implements DocumentServiceInterface
      */
     public function add($object)
     {
-        $document    = $this->transform($object);
-        $eventParams = [
-            'document' => $document,
-            'object'   => $object
-        ];
+        $document = $this->transform($object);
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, $eventParams);
+             ->trigger(__FUNCTION__ . '.pre', $this, compact('document', 'object'));
 
         $response = $this->client->addDocuments([$document]);
 
         $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, $eventParams + ['response' => $response]);
+             ->trigger(__FUNCTION__ . '.post', $this, compact('document', 'object', 'response'));
 
         if (! $response->isOk()) {
             throw new Exception\RuntimeException($response->getError());
