@@ -1,6 +1,4 @@
 <?php
-use MCNElasticSearch\Controller\MappingController;
-
 /**
  * Copyright (c) 2011-2013 Antoine Hedgecock.
  * All rights reserved.
@@ -39,6 +37,9 @@ use MCNElasticSearch\Controller\MappingController;
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
+
+use MCNElasticSearch\Controller\MappingController;
+
 return [
     'es-delete-mapping' => [
         'options' => [
