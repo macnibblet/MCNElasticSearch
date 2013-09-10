@@ -78,7 +78,8 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function setQuery(Query $query)
     {
-        $this->query = $query;
+        $this->query = clone $query;
+        $this->count = null;
     }
 
     /**
