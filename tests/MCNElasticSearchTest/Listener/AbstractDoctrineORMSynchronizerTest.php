@@ -92,7 +92,7 @@ class AbstractDoctrineORMSynchronizerTest extends PHPUnit_Framework_TestCase
             ['persist', 'add', true],
             ['persist', 'add', false],
             ['remove', 'delete', true],
-            ['remove', 'delete', false]
+            ['remove', 'delete', false],
         ];
     }
 
