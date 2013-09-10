@@ -44,11 +44,17 @@ use Zend\Console\ColorInterface;
 use Zend\Console\Prompt;
 use MCNElasticSearch\Service\MappingServiceInterface;
 use Zend\EventManager\Event;
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Console\Adapter\AdapterInterface as Console;
+use Zend\Mvc\Exception;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Class MappingController
+ *
+ * @method \Zend\Console\Request getRequest
  */
-class MappingController extends AbstractCliController
+class MappingController extends AbstractActionController
 {
     /**
      * @var \MCNElasticSearch\Service\MappingServiceInterface
@@ -56,13 +62,44 @@ class MappingController extends AbstractCliController
     protected $service;
 
     /**
-     * @param MappingServiceInterface $service
+     * @var \Zend\Console\Adapter\AdapterInterface
      */
-    public function __construct(MappingServiceInterface $service)
+    protected $console;
+
+    /**
+     * @param \Zend\Console\Adapter\AdapterInterface $console
+     * @param \MCNElasticSearch\Service\MappingServiceInterface $service
+     */
+    public function __construct(Console $console, MappingServiceInterface $service)
     {
+        $this->console = $console;
         $this->service = $service;
     }
 
+    /**
+     * Display a simple prompt
+     *
+     * Simple utility to display the prompt that is then mocked to simplify testing instead of inject a prompt bloating
+     * the application.
+     *
+     * @codeCoverageIgnore
+     *
+     * @param string $message
+     *
+     * @return bool
+     */
+    protected function prompt($message = 'Are you sure you want to delete everything ?')
+    {
+        return (new Prompt\Confirm($message))->show();
+    }
+
+    /**
+     * Report the progress of ongoing commands
+     *
+     * @param Event $event
+     *
+     * @return void
+     */
     public function progress(Event $event)
     {
         /**
@@ -82,7 +119,7 @@ class MappingController extends AbstractCliController
     }
 
     /**
-     * Build the schema
+     * Create the schema
      */
     public function createAction()
     {
@@ -97,13 +134,8 @@ class MappingController extends AbstractCliController
     {
         $skipPrompt = $this->getRequest()->getParam('y', false);
 
-        if (! $skipPrompt) {
-            $prompt = new Prompt\Confirm('Are you sure you want to delete everything ?');
-            $prompt->show();
-
-            if (!$prompt) {
-                return;
-            }
+        if (! $skipPrompt && !$this->prompt()) {
+            return;
         }
 
         $this->service->getEventManager()->attach('delete', [$this, 'progress']);

@@ -42,6 +42,8 @@ namespace MCNElasticSearch\ControllerFactory;
 
 use MCNElasticSearch\Controller\MappingController;
 use MCNElasticSearch\Service\MappingService;
+use Zend\Console\Console;
+use Zend\ServiceManager\Exception;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -54,12 +56,20 @@ class MappingControllerFactory implements FactoryInterface
      * Create service
      *
      * @param \Zend\ServiceManager\ServiceLocatorInterface|\Zend\Mvc\Controller\ControllerManager $controllerManager
+     * @throws \Zend\ServiceManager\Exception\ServiceNotFoundException
      * @return MappingController
      */
     public function createService(ServiceLocatorInterface $controllerManager)
     {
+        $sl = $controllerManager->getServiceLocator();
+
+        if (! Console::isConsole()) {
+            throw new Exception\ServiceNotFoundException('Can only be utilised via CLI');
+        }
+
         return new MappingController(
-            $controllerManager->getServiceLocator()->get(MappingService::class)
+            $sl->get('Console'),
+            $sl->get(MappingService::class)
         );
     }
 }
