@@ -76,7 +76,7 @@ class ObjectMetadataOptions extends AbstractOptions
     protected $hydrator;
 
     /**
-     * FQCN of the object class anem
+     * FQCN of the object class name
      *
      * @var string|null
      */
