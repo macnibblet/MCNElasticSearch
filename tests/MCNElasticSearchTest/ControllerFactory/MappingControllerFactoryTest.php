@@ -38,38 +38,52 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ControllerFactory;
+namespace MCNElasticSearchTest\ControllerFactory;
 
 use MCNElasticSearch\Controller\MappingController;
-use MCNElasticSearch\Service\MappingService;
+use MCNElasticSearchTest\Util\ServiceManagerFactory;
 use Zend\Console\Console;
-use Zend\ServiceManager\Exception;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use MCNElasticSearch\ControllerFactory\MappingControllerFactory;
+use Zend\Mvc\Controller\ControllerManager;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 
-/**
- * Class MappingControllerFactoryTest
- */
-class MappingControllerFactory implements FactoryInterface
+class MappingControllerFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Create service
-     *
-     * @param \Zend\ServiceManager\ServiceLocatorInterface|\Zend\Mvc\Controller\ControllerManager $controllerManager
-     * @throws \Zend\ServiceManager\Exception\ServiceNotFoundException
-     * @return MappingController
+     * @var \MCNElasticSearch\ControllerFactory\MappingControllerFactory
      */
-    public function createService(ServiceLocatorInterface $controllerManager)
+    protected $factory;
+
+    /**
+     * @var \Zend\Mvc\Controller\ControllerManager
+     */
+    protected $controllerManager;
+
+    protected function setUp()
     {
-        $sl = $controllerManager->getServiceLocator();
+        $controllerManger = new ControllerManager();
+        $controllerManger->setServiceLocator(ServiceManagerFactory::getServiceManager());
 
-        if (! Console::isConsole()) {
-            throw new Exception\ServiceNotCreatedException('Can only be utilised via CLI');
-        }
+        $this->factory           = new MappingControllerFactory();
+        $this->controllerManager = $controllerManger;
+    }
 
-        return new MappingController(
-            $sl->get('Console'),
-            $sl->get(MappingService::class)
-        );
+    protected function tearDown()
+    {
+        Console::overrideIsConsole(null);
+    }
+
+    public function testFailOnNoneConsoleEnvironment()
+    {
+        $this->setExpectedException(ServiceNotCreatedException::class);
+        Console::overrideIsConsole(false);
+
+        $this->factory->createService($this->controllerManager);
+    }
+
+    public function testValidateInstance()
+    {
+        $controller = $this->factory->createService($this->controllerManager);
+        $this->assertInstanceOf(MappingController::class, $controller);
     }
 }

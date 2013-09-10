@@ -40,7 +40,7 @@
 
 namespace MCNElasticSearch\ServiceFactory;
 
-use Zend\Di\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
 
 /**
