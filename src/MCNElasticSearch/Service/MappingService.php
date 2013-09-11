@@ -112,7 +112,6 @@ class MappingService implements MappingServiceInterface
             } catch (ResponseException $exception) {
                 $response = $exception->getResponse();
             } finally {
-
                 $this->getEventManager()
                      ->trigger('create', $this, compact('mapping', 'response', 'options'));
             }
@@ -148,7 +147,7 @@ class MappingService implements MappingServiceInterface
                 $response = $exception->getResponse();
             } finally {
                 $this->getEventManager()
-                    ->trigger('delete', $this, compact('type', 'response', 'options'));
+                     ->trigger('delete', $this, compact('type', 'response', 'options'));
             }
         }
     }

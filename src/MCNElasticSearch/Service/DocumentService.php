@@ -69,10 +69,10 @@ class DocumentService implements DocumentServiceInterface
 
     /**
      * @param \Elastica\Client $client
-     * @param MetadataService $metadata
+     * @param MetadataServiceInterface $metadata
      * @param \Zend\Stdlib\Hydrator\HydratorPluginManager $hydratorManager
      */
-    public function __construct(Client $client, MetadataService $metadata, HydratorPluginManager $hydratorManager)
+    public function __construct(Client $client, MetadataServiceInterface $metadata, HydratorPluginManager $hydratorManager)
     {
         $this->client          = $client;
         $this->metadata        = $metadata;
@@ -111,8 +111,9 @@ class DocumentService implements DocumentServiceInterface
      * @triggers add.pre
      * @triggers add.post
      *
-     * @throws Exception\InvalidArgumentException   If an invalid object is passed
-     * @throws Exception\RuntimeException           In case something goes wrong during persisting the document
+     * @throws Exception\InvalidArgumentException       If an invalid object is passed
+     * @throws Exception\ObjectMetadataMissingException If the object metadata cannot be found
+     * @throws Exception\RuntimeException               In case something goes wrong during persisting the document
      *
      * @return void
      */
@@ -141,8 +142,9 @@ class DocumentService implements DocumentServiceInterface
      * @triggers update.pre
      * @triggers update.post
      *
-     * @throws Exception\InvalidArgumentException If an invalid object is passed
-     * @throws Exception\RuntimeException         In case something goes wrong during an update
+     * @throws Exception\InvalidArgumentException       If an invalid object is passed
+     * @throws Exception\ObjectMetadataMissingException If the object metadata cannot be found
+     * @throws Exception\RuntimeException               In case something goes wrong during an update
      *
      * @return void
      */
@@ -176,8 +178,9 @@ class DocumentService implements DocumentServiceInterface
      * @triggers delete.pre
      * @triggers delete.post
      *
-     * @throws Exception\InvalidArgumentException If an invalid object is passed
-     * @throws Exception\RuntimeException         In case something goes wrong during an update
+     * @throws Exception\InvalidArgumentException       If an invalid object is passed
+     * @throws Exception\ObjectMetadataMissingException If the object metadata cannot be found
+     * @throws Exception\RuntimeException               In case something goes wrong during an update
      *
      * @return void
      */
