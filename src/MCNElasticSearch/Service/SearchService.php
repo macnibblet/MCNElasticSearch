@@ -72,10 +72,10 @@ class SearchService implements SearchServiceInterface
 
     /**
      * @param \Elastica\Client $client
-     * @param MetadataService $metadata
+     * @param MetadataServiceInterface $metadata
      * @param ObjectManager $objectManager
      */
-    public function __construct(Client $client, MetadataService $metadata, ObjectManager $objectManager)
+    public function __construct(Client $client, MetadataServiceInterface $metadata, ObjectManager $objectManager)
     {
         $this->client        = $client;
         $this->metadata      = $metadata;
@@ -95,8 +95,6 @@ class SearchService implements SearchServiceInterface
     public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW)
     {
         $metadata = $this->metadata->getObjectMetadata($objectClassName);
-        $type     = $this->client->getIndex($metadata->getIndex())
-                                 ->getType($metadata->getType());
 
         switch ($hydration)
         {
@@ -114,6 +112,9 @@ class SearchService implements SearchServiceInterface
             default:
                 throw new Exception\InvalidArgumentException(sprintf('Unknown hydration mode %s', $hydration));
         }
+
+        $type = $this->client->getIndex($metadata->getIndex())
+                             ->getType($metadata->getType());
 
         $adapter->setQuery($query);
         $adapter->setSearchable($type);
