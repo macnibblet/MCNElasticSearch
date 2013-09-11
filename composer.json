@@ -18,11 +18,11 @@
     ],
     "require": {
         "php": ">=5.5",
-        "ruflin/elastica": "0.90.2.0"
+        "ruflin/elastica": "0.90.2.0",
+        "zendframework/zendframework": "~2.2",
+        "doctrine/orm": "2.4.*"
     },
     "require-dev": {
-        "zendframework/zendframework": "~2.2",
-        "doctrine/orm": "2.4.*",
         "phpunit/phpunit": "~3.7",
         "squizlabs/php_codesniffer": "1.4.*",
         "satooshi/php-coveralls": "~0.6"
