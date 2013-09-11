@@ -72,8 +72,11 @@ class DocumentService implements DocumentServiceInterface
      * @param MetadataServiceInterface $metadata
      * @param \Zend\Stdlib\Hydrator\HydratorPluginManager $hydratorManager
      */
-    public function __construct(Client $client, MetadataServiceInterface $metadata, HydratorPluginManager $hydratorManager)
-    {
+    public function __construct(
+        Client $client,
+        MetadataServiceInterface $metadata,
+        HydratorPluginManager $hydratorManager
+    ) {
         $this->client          = $client;
         $this->metadata        = $metadata;
         $this->hydratorManager = $hydratorManager;
@@ -160,7 +163,7 @@ class DocumentService implements DocumentServiceInterface
             $document->getData(),
             $document->getIndex(),
             $document->getType()
-       );
+        );
 
         $this->getEventManager()
              ->trigger(__FUNCTION__ . '.post', $this, compact('document', 'object', 'response'));

@@ -76,9 +76,9 @@ class AbstractDoctrineORMSynchronizerTest extends PHPUnit_Framework_TestCase
     public function testMatchSubscribedEvents()
     {
         $events = [
-            Events::postPersist,
-            Events::postUpdate,
-            Events::postRemove
+            Events::POSTPERSIST,
+            Events::POSTUPDATE,
+            Events::POSTREMOVE
         ];
 
         $this->assertEquals($events, $this->listener->getSubscribedEvents());

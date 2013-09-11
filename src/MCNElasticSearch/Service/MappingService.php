@@ -91,9 +91,12 @@ class MappingService implements MappingServiceInterface
         $mappings = $this->metadata->getAllTypeMappings();
 
         if (! empty($types)) {
-            array_filter($mappings, function(TypeMappingOptions $t) use ($types) {
-                return in_array($t->getName(), $types);
-            });
+            array_filter(
+                $mappings,
+                function (TypeMappingOptions $t) use ($types) {
+                    return in_array($t->getName(), $types);
+                }
+            );
         }
 
         /** @var $options \MCNElasticSearch\Options\TypeMappingOptions */
@@ -132,9 +135,12 @@ class MappingService implements MappingServiceInterface
         $mappings = $this->metadata->getAllTypeMappings();
 
         if (! empty($types)) {
-            array_filter($mappings, function(TypeMappingOptions $t) use ($types) {
-                return in_array($t->getName(), $types);
-            });
+            array_filter(
+                $mappings,
+                function (TypeMappingOptions $t) use ($types) {
+                    return in_array($t->getName(), $types);
+                }
+            );
         }
 
         foreach ($mappings as $options) {

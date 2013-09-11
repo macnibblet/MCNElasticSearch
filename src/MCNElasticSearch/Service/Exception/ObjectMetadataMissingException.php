@@ -39,6 +39,7 @@
  */
 
 namespace MCNElasticSearch\Service\Exception;
+
 use Exception;
 
 /**

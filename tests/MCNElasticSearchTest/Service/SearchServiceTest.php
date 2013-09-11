@@ -113,7 +113,7 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
 
     public function dataHydrationModes()
     {
-        $doctrineSetup = function() {
+        $doctrineSetup = function () {
             $this->objectManager
                 ->expects($this->once())
                 ->method('getRepository')

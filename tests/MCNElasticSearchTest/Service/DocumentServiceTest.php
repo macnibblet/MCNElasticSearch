@@ -100,15 +100,15 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
         return [
             ['add', 'addDocuments', Exception\InvalidArgumentException::class, 'foo'],
             ['add', 'addDocuments', Exception\ObjectMetadataMissingException::class, $object],
-            ['add', 'addDocuments', null, $object],
+            ['add', 'addDocuments', $object, null],
 
             ['update', 'updateDocument', Exception\InvalidArgumentException::class, 'foo'],
             ['update', 'updateDocument', Exception\ObjectMetadataMissingException::class, $object],
-            ['update', 'updateDocument', null, $object],
+            ['update', 'updateDocument', $object, null],
 
             ['delete', 'deleteDocuments', Exception\InvalidArgumentException::class, 'foo'],
             ['delete', 'deleteDocuments', Exception\ObjectMetadataMissingException::class, $object],
-            ['delete', 'deleteDocuments', null, $object],
+            ['delete', 'deleteDocuments', $object, null],
         ];
     }
 
@@ -119,10 +119,10 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @param string      $method       The service method to call
      * @param string      $clientMethod The internal method on the elastica client
-     * @param string|null $exception    Possible exception thrown by the transform method
      * @param mixed       $object       The object passed to the service call
+     * @param string|null $exception    Possible exception thrown by the transform method
      */
-    public function testTransform($method, $clientMethod, $exception = null, $object)
+    public function testTransform($method, $clientMethod, $object, $exception = null)
     {
         if ($exception !== null) {
             $this->setExpectedException($exception);
@@ -135,10 +135,12 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
         } else {
 
             $metadata = new ObjectMetadataOptions();
-            $metadata->setFromArray([
-                'index' => 'hello',
-                'type' => 'world'
-            ]);
+            $metadata->setFromArray(
+                [
+                    'index' => 'hello',
+                    'type' => 'world'
+                ]
+            );
 
             $this->metadataService
                 ->expects($this->once())
@@ -218,7 +220,15 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
 
         $eventManager->expects($this->at(1))
             ->method('trigger')
-            ->with($method . '.post', $service, ['document' => $document, 'object' => $object, 'response' => $response]);
+            ->with(
+                $method . '.post',
+                $service,
+                [
+                    'document' => $document,
+                    'object' => $object,
+                    'response' => $response
+                ]
+            );
 
         $service->expects($this->exactly(2))
                 ->method('getEventManager')
@@ -232,4 +242,3 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
         $service->{$method}($object);
     }
 }
-
