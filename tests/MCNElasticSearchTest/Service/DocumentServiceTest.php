@@ -98,16 +98,16 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
         $object = new ArrayObject();
 
         return [
-            ['add', 'addDocuments', Exception\InvalidArgumentException::class, 'foo'],
-            ['add', 'addDocuments', Exception\ObjectMetadataMissingException::class, $object],
+            ['add', 'addDocuments', 'foo',   Exception\InvalidArgumentException::class],
+            ['add', 'addDocuments', $object, Exception\ObjectMetadataMissingException::class],
             ['add', 'addDocuments', $object, null],
 
-            ['update', 'updateDocument', Exception\InvalidArgumentException::class, 'foo'],
-            ['update', 'updateDocument', Exception\ObjectMetadataMissingException::class, $object],
+            ['update', 'updateDocument', 'foo',   Exception\InvalidArgumentException::class],
+            ['update', 'updateDocument', $object, Exception\ObjectMetadataMissingException::class],
             ['update', 'updateDocument', $object, null],
 
-            ['delete', 'deleteDocuments', Exception\InvalidArgumentException::class, 'foo'],
-            ['delete', 'deleteDocuments', Exception\ObjectMetadataMissingException::class, $object],
+            ['delete', 'deleteDocuments', 'foo',   Exception\InvalidArgumentException::class],
+            ['delete', 'deleteDocuments', $object, Exception\ObjectMetadataMissingException::class],
             ['delete', 'deleteDocuments', $object, null],
         ];
     }

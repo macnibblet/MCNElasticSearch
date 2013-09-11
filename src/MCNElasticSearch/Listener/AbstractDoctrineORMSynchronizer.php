@@ -82,9 +82,9 @@ abstract class AbstractDoctrineORMSynchronizer implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::POSTPERSIST,
-            Events::POSTUPDATE,
-            Events::POSTREMOVE,
+            Events::postPersist,
+            Events::postUpdate,
+            Events::postRemove,
         ];
     }
 
