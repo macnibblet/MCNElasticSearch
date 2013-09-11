@@ -1,6 +1,6 @@
 {
     "name": "mcn/elastic-search",
-    "description": "Zend Framework 2 module that let you deal with CORS requests",
+    "description": "A module that helps integration of elastic search",
     "type": "library",
     "license": "BSD3",
     "keywords": [
