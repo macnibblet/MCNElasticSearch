@@ -160,7 +160,9 @@ class Doctrine extends AbstractAdapter
         $sorting = array_keys($meta);
 
         foreach ($items as $item) {
-            $id = $item[$this->objectMetadata->getId()];
+
+            $method = 'get' . $this->objectMetadata->getId();
+            $id = $item->{$method}();
 
             if (! empty($meta[$id])) {
                 $item = [$item] + $meta[$id];
