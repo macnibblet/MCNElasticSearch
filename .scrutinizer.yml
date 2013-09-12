@@ -7,10 +7,7 @@ tools:
         test_command: ./vendor/bin/phpunit -c phpunit.xml.dist --group=Coverage
     php_code_sniffer:
         enabled: true
-        config:
-            standard: PSR2
-        filter:
-            paths: ["src/*", "tests/*"]
+        test_command: ./vendor/bin/phpcs --standard=PSR2 --ignore=./src/MCNElasticSearch/Listener/AbstractDoctrineORMSynchronizer.php ./src/
     php_cpd:
         enabled: true
         excluded_dirs: ["build/*", "tests", "vendor"]
@@ -19,7 +16,7 @@ tools:
         config:
             level: all
         filter:
-            paths: ["src/*", "tests/*"]
+            paths: ["src/*"]
     php_loc:
         enabled: true
         excluded_dirs: ["build", "tests", "vendor"]
@@ -33,5 +30,5 @@ tools:
     php_analyzer: true
     php_analyzer:
         filter:
-            paths: ["src/*", "tests/*"]
+            paths: ["src/*"]
     sensiolabs_security_checker: true
