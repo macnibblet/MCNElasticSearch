@@ -79,10 +79,14 @@ class Doctrine extends AbstractAdapter
      * @param int $offset
      * @param int $itemCountPerPage
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return array
      */
     public function getItems($offset, $itemCountPerPage)
     {
+        if ($this->count() == 0) {
+            return [];
+        }
+
         $this->query->setFrom($offset);
         $this->query->setSize($itemCountPerPage);
 
