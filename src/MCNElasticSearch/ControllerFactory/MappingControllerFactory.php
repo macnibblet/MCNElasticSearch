@@ -56,7 +56,9 @@ class MappingControllerFactory implements FactoryInterface
      * Create service
      *
      * @param \Zend\ServiceManager\ServiceLocatorInterface|\Zend\Mvc\Controller\ControllerManager $controllerManager
-     * @throws \Zend\ServiceManager\Exception\ServiceNotFoundException
+     *
+     * @throws \Zend\ServiceManager\Exception\ServiceNotCreatedException
+     *
      * @return MappingController
      */
     public function createService(ServiceLocatorInterface $controllerManager)
