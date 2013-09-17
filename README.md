@@ -10,8 +10,8 @@ You wish to...
 --------------
 
 * You wish to have a utility for updating / deleting the mapping
-* You wish to keep your elastic search synchronized ORM
-* You wish to have a simple service that provides you with a simple interface to search and return doctrine entities
+* You wish to keep your elastic search synchronized with your ORM
+* You wish to have a service that provides you with a simple interface to search and return doctrine entities
 
 
 Step 1, setup mapping
@@ -113,6 +113,7 @@ Step 3, Perform a search
 ------------------------
 
 Now im going to continue on the previous example, and take a piece of code from my API written using ```PhlyRestfully```
+and perform a search against my companies type sorting by distance and filtering away all companies further away then 1000km
 
 ```php
 class CompanyResource implements ListenerAggregateInterface
