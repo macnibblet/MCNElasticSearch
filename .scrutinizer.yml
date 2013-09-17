@@ -7,7 +7,10 @@ tools:
         test_command: ./vendor/bin/phpunit -c phpunit.xml.dist
     php_code_sniffer:
         enabled: true
-        test_command: ./vendor/bin/phpcs --standard=PSR2 --ignore=./src/MCNElasticSearch/Listener/AbstractDoctrineORMSynchronizer.php ./src/
+        config:
+            standard: PSR2
+        filter:
+            paths: ["src/*"]
     php_cpd:
         enabled: true
         excluded_dirs: ["build/*", "tests", "vendor"]
