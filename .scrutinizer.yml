@@ -11,7 +11,7 @@ tools:
             standard: PSR2
         filter:
             paths: ["src/*"]
-            exclude_paths: ["src/MCNElasticSearch/Listener/*"]
+            excluded_paths: ["src/MCNElasticSearch/Listener/*"]
     php_cpd:
         enabled: true
         excluded_dirs: ["build/*", "tests", "vendor"]
