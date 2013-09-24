@@ -36,5 +36,9 @@
         "classmap": [
             "./Module.php"
         ]
+    },
+
+    "provide": {
+        "ext-mongo": "1.2.15"
     }
 }
