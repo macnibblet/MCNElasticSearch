@@ -3,6 +3,9 @@ language: php
 php:
   - 5.5
 
+services:
+  - mongodb
+
 before_script:
   - composer self-update
   - composer update --prefer-source
