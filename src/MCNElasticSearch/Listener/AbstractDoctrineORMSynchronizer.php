@@ -48,32 +48,10 @@ use MCNElasticSearch\Service\DocumentServiceInterface;
 /**
  * Class AbstractDoctrineORMSynchronizer
  *
- * Provides a very simple API to extend from to synchronize objects.
+ * Provides a very simple API to help synchronize objects between the ORM and ElasticSearch.
  */
-abstract class AbstractDoctrineORMSynchronizer implements EventSubscriber
+abstract class AbstractDoctrineORMSynchronizer extends AbstractSynchronizer
 {
-    /**
-     * @var \MCNElasticSearch\Service\DocumentServiceInterface
-     */
-    protected $service;
-
-    /**
-     * @param DocumentServiceInterface $service
-     */
-    public function __construct(DocumentServiceInterface $service)
-    {
-        $this->service = $service;
-    }
-
-    /**
-     * Check that an object is of the proper instance
-     *
-     * @param mixed $object
-     *
-     * @return bool
-     */
-    abstract public function isValid($object);
-
     /**
      * Returns an array of events this subscriber wants to listen to.
      *
