@@ -41,9 +41,11 @@
 namespace MCNElasticSearchTest\Service\Search\PaginatorAdapter;
 
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Elastica\SearchableInterface;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Service\Search\PaginatorAdapter\Doctrine;
+use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions;
 
 /**
  * Class DoctrineTest
@@ -58,7 +60,7 @@ class DoctrineTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    protected $selectable;
+    protected $repository;
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -70,15 +72,22 @@ class DoctrineTest extends \PHPUnit_Framework_TestCase
      */
     protected $adapter;
 
+    /**
+     * @var DoctrineOptions
+     */
+    protected $options;
+
     protected function setUp()
     {
         $this->searchable = $this->getMock(SearchableInterface::class);
-        $this->selectable = $this->getMock(Selectable::class);
+        $this->repository = $this->getMock(ObjectRepository::class);
         $this->metadata   = $this->getMock(ObjectMetadataOptions::class);
+        $this->options    = new DoctrineOptions();
 
         $this->adapter = new Doctrine(
-            $this->selectable,
-            $this->metadata
+            $this->repository,
+            $this->metadata,
+            $this->options
         );
 
         $this->adapter->setSearchable($this->searchable);

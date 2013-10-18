@@ -41,12 +41,12 @@
 namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Elastica\Query;
 use Elastica\ResultSet;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Service\Exception;
+use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions as Options;
 
 /**
  * Class Doctrine
@@ -64,11 +64,18 @@ class Doctrine extends AbstractAdapter
     protected $objectMetadata;
 
     /**
-     * @param \Doctrine\Common\Collections\Selectable         $repository
-     * @param \MCNElasticSearch\Options\ObjectMetadataOptions $objectMetadata
+     * @var DoctrineOptions
      */
-    public function __construct(Selectable $repository, ObjectMetadataOptions $objectMetadata)
+    protected $options;
+
+    /**
+     * @param \Doctrine\Common\Persistence\ObjectRepository   $repository
+     * @param \MCNElasticSearch\Options\ObjectMetadataOptions $objectMetadata
+     * @param DoctrineOptions                                 $options
+     */
+    public function __construct(ObjectRepository $repository, ObjectMetadataOptions $objectMetadata, Options $options)
     {
+        $this->options        = $options;
         $this->repository     = $repository;
         $this->objectMetadata = $objectMetadata;
     }
@@ -94,7 +101,7 @@ class Doctrine extends AbstractAdapter
         $response = $this->searchable->search($this->query);
 
         $meta  = $this->extractMetaInformation($response);
-        $items = $this->loadFromDoctrine(array_keys($meta));
+        $items = $this->load(array_keys($meta));
 
         return $this->merge($meta, $items);
     }
@@ -131,21 +138,12 @@ class Doctrine extends AbstractAdapter
     /**
      * Get all the objects from doctrine
      *
-     * @param array $id
-     *
+     * @param array $items     *
      * @return \Doctrine\Common\Collections\Collection
      */
-    private function loadFromDoctrine(array $id)
+    protected function load(array $items)
     {
-        $criteria = Criteria::create();
-        $criteria->where(
-            $criteria->expr()->in(
-                $this->objectMetadata->getId(),
-                $id
-            )
-        );
-
-        return $this->repository->matching($criteria);
+        return (new $this->options->getStrategy())->load($items, $this->repository);
     }
 
     /**
@@ -154,11 +152,12 @@ class Doctrine extends AbstractAdapter
      * Merges the meta data if any exists into the result set, and due to the nature of SQL IN we also need to sort
      * the documents according to the results of the elastic query search
      *
-     * @param array $meta
+     * @param array      $meta
      * @param Collection $items
+     *
      * @return array
      */
-    private function merge(array $meta, Collection $items)
+    protected function merge(array $meta, Collection $items)
     {
         $result  = [];
         $sorting = array_keys($meta);
