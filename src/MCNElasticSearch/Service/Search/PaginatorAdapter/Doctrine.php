@@ -54,7 +54,7 @@ use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions as Options;
 class Doctrine extends AbstractAdapter
 {
     /**
-     * @var \Doctrine\Common\Collections\Selectable
+     * @var \Doctrine\Common\Collections\ObjectRepository
      */
     protected $repository;
 
