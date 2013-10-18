@@ -143,7 +143,8 @@ class Doctrine extends AbstractAdapter
      */
     protected function load(array $items)
     {
-        return (new $this->options->getStrategy())->load($items, $this->repository);
+        $className = $this->options->getStrategy();
+        return (new $className)->load($items, $this->repository, $this->objectMetadata);
     }
 
     /**

@@ -15,9 +15,9 @@ use MCNElasticSearch\Service\Exception;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 
 /**
- * Class CriteriaIn
+ * Class CriteriaInStrategy
  */
-class CriteriaIn implements LoaderStrategyInterface
+class CriteriaInStrategy implements LoaderStrategyInterface
 {
     /**
      * Load a bunch of items from the object repository
