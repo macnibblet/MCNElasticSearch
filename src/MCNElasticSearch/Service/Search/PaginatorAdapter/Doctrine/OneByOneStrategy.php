@@ -32,7 +32,7 @@ class OneByOneStrategy implements LoaderStrategyInterface
 
         foreach ($items as $item) {
 
-            $result = $repository->find($item);
+            $result = $repository->findOneBy([$objectMetadata->getId() => $item]);
 
             // not doing this could cause some strange issues!
             if ($result) {
