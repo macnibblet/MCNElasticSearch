@@ -40,7 +40,6 @@
 
 namespace MCNElasticSearch\Service;
 
-use Elastica\Client;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Options\TypeMappingOptions;
 

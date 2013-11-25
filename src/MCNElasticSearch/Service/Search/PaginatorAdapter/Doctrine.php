@@ -45,7 +45,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Elastica\Query;
 use Elastica\ResultSet;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
-use MCNElasticSearch\Service\Exception;
 use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions as Options;
 
 /**
@@ -138,12 +137,14 @@ class Doctrine extends AbstractAdapter
     /**
      * Get all the objects from doctrine
      *
-     * @param array $items     *
+     * @param array $items
+     *
      * @return \Doctrine\Common\Collections\Collection
      */
     protected function load(array $items)
     {
         $className = $this->options->getStrategy();
+
         return (new $className)->load($items, $this->repository, $this->objectMetadata);
     }
 
@@ -176,6 +177,7 @@ class Doctrine extends AbstractAdapter
         }
 
         ksort($result);
+
         return $result;
     }
 }

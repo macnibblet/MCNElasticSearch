@@ -46,8 +46,6 @@ use MCNElasticSearch\Service\MappingServiceInterface;
 use Zend\EventManager\Event;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Console\Adapter\AdapterInterface as Console;
-use Zend\Mvc\Exception;
-use Zend\Mvc\MvcEvent;
 
 /**
  * Class MappingController
@@ -67,7 +65,7 @@ class MappingController extends AbstractActionController
     protected $console;
 
     /**
-     * @param \Zend\Console\Adapter\AdapterInterface $console
+     * @param \Zend\Console\Adapter\AdapterInterface            $console
      * @param \MCNElasticSearch\Service\MappingServiceInterface $service
      */
     public function __construct(Console $console, MappingServiceInterface $service)

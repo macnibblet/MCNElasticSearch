@@ -68,8 +68,8 @@ class DocumentService implements DocumentServiceInterface
     protected $hydratorManager;
 
     /**
-     * @param \Elastica\Client $client
-     * @param MetadataServiceInterface $metadata
+     * @param \Elastica\Client                            $client
+     * @param MetadataServiceInterface                    $metadata
      * @param \Zend\Stdlib\Hydrator\HydratorPluginManager $hydratorManager
      */
     public function __construct(
@@ -85,7 +85,7 @@ class DocumentService implements DocumentServiceInterface
     /**
      * Converts an object into a elastica document
      *
-     * @param mixed $object
+     * @param  mixed                              $object
      * @throws Exception\InvalidArgumentException If an invalid object is passed
      * @return \Elastica\Document
      */

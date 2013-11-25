@@ -40,7 +40,6 @@
 
 namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
-
 use Elastica\Query;
 use Elastica\SearchableInterface;
 use Zend\Paginator\Adapter\AdapterInterface;

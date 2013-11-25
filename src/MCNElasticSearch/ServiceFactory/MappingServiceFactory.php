@@ -43,7 +43,6 @@ namespace MCNElasticSearch\ServiceFactory;
 use Elastica\Client;
 use MCNElasticSearch\Service\MappingService;
 use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -54,7 +53,7 @@ class MappingServiceFactory extends AbstractFactory
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param  ServiceLocatorInterface $serviceLocator
      * @return mixed
      */
     public function createService(ServiceLocatorInterface $serviceLocator)

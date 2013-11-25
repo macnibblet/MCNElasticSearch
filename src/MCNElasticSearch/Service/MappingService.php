@@ -46,9 +46,6 @@ use Elastica\Type\Mapping;
 use Elastica\Type;
 use MCNElasticSearch\Options\TypeMappingOptions;
 use Zend\EventManager\EventManagerAwareTrait;
-use Zend\EventManager\EventManagerInterface;
-use Zend\Log\Logger;
-use Zend\Stdlib\Hydrator\ClassMethods;
 
 /**
  * Class MappingService
@@ -69,7 +66,7 @@ class MappingService implements MappingServiceInterface
 
     /**
      * @param \Elastica\Client $client
-     * @param MetadataService $metadata
+     * @param MetadataService  $metadata
      */
     public function __construct(Client $client, MetadataService $metadata)
     {

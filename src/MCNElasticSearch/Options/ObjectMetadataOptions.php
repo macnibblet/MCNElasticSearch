@@ -141,7 +141,7 @@ class ObjectMetadataOptions extends AbstractOptions
      */
     public function setType($type)
     {
-        $this->type = (string)$type;
+        $this->type = (string) $type;
     }
 
     /**
@@ -157,7 +157,7 @@ class ObjectMetadataOptions extends AbstractOptions
      */
     public function setIndex($index)
     {
-        $this->index = (string)$index;
+        $this->index = (string) $index;
     }
 
     /**

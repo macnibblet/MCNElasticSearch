@@ -44,7 +44,6 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Elastica\Client;
 use Elastica\Query;
 use Zend\EventManager\EventManagerAwareTrait;
-use Zend\EventManager\ProvidesEvents;
 use Zend\Paginator\Paginator;
 
 /**
@@ -70,9 +69,9 @@ class SearchService implements SearchServiceInterface
     protected $client;
 
     /**
-     * @param \Elastica\Client $client
+     * @param \Elastica\Client         $client
      * @param MetadataServiceInterface $metadata
-     * @param ObjectManager $objectManager
+     * @param ObjectManager            $objectManager
      */
     public function __construct(Client $client, MetadataServiceInterface $metadata, ObjectManager $objectManager)
     {
@@ -96,8 +95,7 @@ class SearchService implements SearchServiceInterface
     {
         $metadata = $this->metadata->getObjectMetadata($objectClassName);
 
-        switch ($hydration)
-        {
+        switch ($hydration) {
             case static::HYDRATE_DOCTRINE_OBJECT:
                 $adapter = new Search\PaginatorAdapter\Doctrine(
                     $this->objectManager->getRepository($objectClassName),
@@ -119,6 +117,7 @@ class SearchService implements SearchServiceInterface
 
         $adapter->setQuery($query);
         $adapter->setSearchable($type);
+
         return new Paginator($adapter);
     }
 }
