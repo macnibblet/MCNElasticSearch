@@ -43,6 +43,7 @@ namespace MCNElasticSearchTest\Service;
 use Closure;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Elastica\Client;
 use Elastica\Index;
 use Elastica\Query;
@@ -117,7 +118,7 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
             $this->objectManager
                 ->expects($this->once())
                 ->method('getRepository')
-                ->will($this->returnValue($this->getMock(Selectable::class)));
+                ->will($this->returnValue($this->getMock(ObjectRepository::class)));
         };
 
         return [

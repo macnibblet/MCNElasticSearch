@@ -46,7 +46,6 @@ use Elastica\Query;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\EventManager\ProvidesEvents;
 use Zend\Paginator\Paginator;
-use Zend\Stdlib\Hydrator\HydratorPluginManager;
 
 /**
  * Class SearchService
@@ -86,13 +85,14 @@ class SearchService implements SearchServiceInterface
      * Perform a search
      *
      * @param string $objectClassName
-     * @param \Elastica\Query $query
+     * @param Query  $query
      * @param string $hydration
+     * @param array  $options
      *
      * @throws Exception\InvalidArgumentException
      * @return \Zend\Paginator\Paginator
      */
-    public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW)
+    public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW, array $options = [])
     {
         $metadata = $this->metadata->getObjectMetadata($objectClassName);
 
@@ -101,7 +101,8 @@ class SearchService implements SearchServiceInterface
             case static::HYDRATE_DOCTRINE_OBJECT:
                 $adapter = new Search\PaginatorAdapter\Doctrine(
                     $this->objectManager->getRepository($objectClassName),
-                    $metadata
+                    $metadata,
+                    new Search\PaginatorAdapter\DoctrineOptions($options)
                 );
                 break;
 
