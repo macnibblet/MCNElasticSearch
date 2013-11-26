@@ -33,74 +33,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-use MCNElasticSearch\Service\Document\Writer\Adapter\DevNull;
-use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
-use MCNElasticSearch\Service\DocumentService;
-use MCNElasticSearch\Service\MappingService;
-use MCNElasticSearch\Service\SearchService;
-use MCNElasticSearch\ServiceFactory\Document\Writer\Adapter\ImmediateFactory;
+namespace MCNElasticSearch\Service\Document\Writer;
 
-return [
-    'MCNElasticSearch' => [
+use Zend\ServiceManager\AbstractPluginManager;
+use Zend\ServiceManager\Exception;
 
-        /**
-         * Client configuration
-         */
-        'client' => [],
+/**
+ * Class WriterPluginManager
+ */
+class WriterPluginManager extends AbstractPluginManager
+{
+    protected $autoAddInvokableClass = false;
 
-        /**
-         * Metadata configuration
-         */
-        'metadata' => [
+    /**
+     * Validate the plugin
+     *
+     * Checks that the filter loaded is either a valid callback or an instance
+     * of FilterInterface.
+     *
+     * @param  mixed $plugin
+     *
+     * @throws \Zend\ServiceManager\Exception\InvalidArgumentException
+     *
+     * @return void
+     */
+    public function validatePlugin($plugin)
+    {
+        if ($plugin instanceof WriterInterface) {
+            return;
+        }
 
-            /**
-             * List of object mappings
-             */
-            'objects' => [],
-
-            /**
-             * List of types E.g "SQL Tables"
-             */
-            'types' => []
-        ],
-
-        'writer_manager' => [
-            'invokables' => [
-                DevNull::class => DevNull::class
-            ],
-
-            'factories' => [
-                Immediate::class => ImmediateFactory::class
-            ],
-
-            'aliases' => [
-                'devnull'   => DevNull::class,
-                'immediate' => Immediate::class
-            ]
-        ],
-
-        DocumentService::class => [
-            'listeners' => [],
-            'options'   => [
-                'default_writer' => Immediate::class
-            ]
-        ],
-
-        SearchService::class => [
-            'listeners' => []
-        ],
-
-        MappingService::class => [
-            'listeners' => []
-        ]
-    ],
-
-    'console'         => ['router' => ['routes' => include __DIR__ . '/console-routes.config.php']],
-    'service_manager' => include __DIR__ . '/service.config.php',
-    'controllers'     => include __DIR__ . '/controller.config.php'
-];
+        throw new Exception\InvalidArgumentException(sprintf(
+            'Plugin of type %s is invalid; must implement %s\WriterInterface',
+            (is_object($plugin) ? get_class($plugin) : gettype($plugin)),
+            __NAMESPACE__
+        ));
+    }
+}

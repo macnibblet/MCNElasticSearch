@@ -33,74 +33,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-use MCNElasticSearch\Service\Document\Writer\Adapter\DevNull;
-use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
-use MCNElasticSearch\Service\DocumentService;
-use MCNElasticSearch\Service\MappingService;
-use MCNElasticSearch\Service\SearchService;
-use MCNElasticSearch\ServiceFactory\Document\Writer\Adapter\ImmediateFactory;
+namespace MCNElasticSearch\Service\Document\Writer\Exception;
 
-return [
-    'MCNElasticSearch' => [
+use MCNElasticSearch\Service\Exception as ServiceException;
 
-        /**
-         * Client configuration
-         */
-        'client' => [],
-
-        /**
-         * Metadata configuration
-         */
-        'metadata' => [
-
-            /**
-             * List of object mappings
-             */
-            'objects' => [],
-
-            /**
-             * List of types E.g "SQL Tables"
-             */
-            'types' => []
-        ],
-
-        'writer_manager' => [
-            'invokables' => [
-                DevNull::class => DevNull::class
-            ],
-
-            'factories' => [
-                Immediate::class => ImmediateFactory::class
-            ],
-
-            'aliases' => [
-                'devnull'   => DevNull::class,
-                'immediate' => Immediate::class
-            ]
-        ],
-
-        DocumentService::class => [
-            'listeners' => [],
-            'options'   => [
-                'default_writer' => Immediate::class
-            ]
-        ],
-
-        SearchService::class => [
-            'listeners' => []
-        ],
-
-        MappingService::class => [
-            'listeners' => []
-        ]
-    ],
-
-    'console'         => ['router' => ['routes' => include __DIR__ . '/console-routes.config.php']],
-    'service_manager' => include __DIR__ . '/service.config.php',
-    'controllers'     => include __DIR__ . '/controller.config.php'
-];
+/**
+ * Class InvalidArgumentException
+ */
+class InvalidArgumentException extends ServiceException\InvalidArgumentException
+{
+}

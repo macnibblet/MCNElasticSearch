@@ -33,74 +33,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-use MCNElasticSearch\Service\Document\Writer\Adapter\DevNull;
-use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
-use MCNElasticSearch\Service\DocumentService;
-use MCNElasticSearch\Service\MappingService;
-use MCNElasticSearch\Service\SearchService;
-use MCNElasticSearch\ServiceFactory\Document\Writer\Adapter\ImmediateFactory;
+namespace MCNElasticSearch\ServiceFactory\Document\Writer;
 
-return [
-    'MCNElasticSearch' => [
+use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
+use MCNElasticSearch\ServiceFactory\Exception\MissingConfigurationException;
+use Zend\ServiceManager\Config;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-        /**
-         * Client configuration
-         */
-        'client' => [],
+/**
+ * Class WriterPluginManagerFactory
+ */
+class WriterPluginManagerFactory implements FactoryInterface
+{
+    /**
+     * Create service
+     *
+     * @param ServiceLocatorInterface $serviceLocator
+     *
+     * @throws \MCNElasticSearch\ServiceFactory\Exception\MissingConfigurationException
+     *
+     * @return \MCNElasticSearch\Service\Document\Writer\WriterPluginManager
+     */
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        $config = $serviceLocator->get('Config');
 
-        /**
-         * Metadata configuration
-         */
-        'metadata' => [
+        if (! isset($config['MCNElasticSearch']['writer_manager'])) {
+            throw new MissingConfigurationException(
+                'Could not found the configuration key "writer_manager" in MCNElasticSearch'
+            );
+        }
 
-            /**
-             * List of object mappings
-             */
-            'objects' => [],
-
-            /**
-             * List of types E.g "SQL Tables"
-             */
-            'types' => []
-        ],
-
-        'writer_manager' => [
-            'invokables' => [
-                DevNull::class => DevNull::class
-            ],
-
-            'factories' => [
-                Immediate::class => ImmediateFactory::class
-            ],
-
-            'aliases' => [
-                'devnull'   => DevNull::class,
-                'immediate' => Immediate::class
-            ]
-        ],
-
-        DocumentService::class => [
-            'listeners' => [],
-            'options'   => [
-                'default_writer' => Immediate::class
-            ]
-        ],
-
-        SearchService::class => [
-            'listeners' => []
-        ],
-
-        MappingService::class => [
-            'listeners' => []
-        ]
-    ],
-
-    'console'         => ['router' => ['routes' => include __DIR__ . '/console-routes.config.php']],
-    'service_manager' => include __DIR__ . '/service.config.php',
-    'controllers'     => include __DIR__ . '/controller.config.php'
-];
+        return new WriterPluginManager(
+            new Config($config['MCNElasticSearch']['writer_manager'])
+        );
+    }
+}
