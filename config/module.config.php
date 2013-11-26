@@ -46,6 +46,7 @@ use MCNElasticSearch\Service\SearchService;
 use MCNElasticSearch\ServiceFactory\Document\Writer\Adapter\ImmediateFactory;
 use MCNElasticSearch\Service\Document\Writer\Logger;
 use MCNElasticSearch\ServiceFactory\Document\Writer\LoggerFactory;
+use Psr\Log\LogLevel;
 
 return [
     'MCNElasticSearch' => [
@@ -68,13 +69,13 @@ return [
             /**
              * The key used to get the logger utility from the service locator
              */
-            'sl_key'  => null,
+            'logger_service_name'  => null,
 
             /**
              * Options that are passed to the MCNElasticSearch\Document\Writer\LoggerOptions
              */
             'options' => [
-                'logLevel' => 'notice'
+                'logLevel' => LogLevel::NOTICE
             ]
         ],
 

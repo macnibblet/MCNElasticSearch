@@ -39,86 +39,19 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\Service\Document;
+namespace MCNElasticSearch\Service\Search\Criteria;
 
-use ArrayAccess;
+use Doctrine\Common\Collections\ExpressionBuilder as CommonExpressionBuilder;
 
-/**
- * Class DocumentEntity
- *
- * Used to pass around structured objects instead of array representatives of a document.
- *
- * @internal
- */
-final class DocumentEntity implements ArrayAccess
+class ExpressionBuilder extends CommonExpressionBuilder
 {
-    /**
-     * @var string|null
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $index;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var array
-     */
-    protected $body;
-
-    /**
-     * @param string      $index
-     * @param string      $type
-     * @param string|null $id
-     * @param array       $body
-     */
-    public function __construct($index, $type, $id = null, array $body = [])
+    public function filtered()
     {
-        $this->id    = $id === null ? null : (string) $id;
-        $this->type  = (string) $type;
-        $this->index = (string) $index;
-        $this->body  = $body;
+        return new CompositeExpression(CompositeExpression::TYPE_FILTERED, func_get_args());
     }
 
-    /**
-     * {@Inheritdoc}
-     */
-    public function offsetExists($offset)
+    public function query()
     {
-        return isset($this->{$offset});
-    }
-
-    /**
-     * {@Inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        return $this->{$offset};
-    }
-
-    /**
-     * {@Inheritdoc}
-     *
-     * @throws Exception\ReadOnlyException
-     */
-    public function offsetSet($offset, $value)
-    {
-        throw new Exception\ReadOnlyException();
-    }
-
-    /**
-     * {@Inheritdoc}
-     *
-     * @throws Exception\ReadOnlyException
-     */
-    public function offsetUnset($offset)
-    {
-        throw new Exception\ReadOnlyException();
+        return new CompositeExpression(CompositeExpression::TYPE_QUERY, func_get_args());
     }
 }

@@ -70,24 +70,22 @@ class LoggerFactory implements DelegatorFactoryInterface
     public function createDelegatorWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName, $callback)
     {
         $config = $serviceLocator->get('Config');
-
         if (! isset($config['MCNElasticSearch']['logging'])) {
             throw new MissingConfigurationException(
                 'Could not found the configuration key "logging" in MCNElasticSearch'
             );
         }
 
-        $config = $config['MCNElasticSearch']['logging'];
-        if (! $config['enabled']) {
+        $loggerConfig = $config['MCNElasticSearch']['logging'];
+        if (! $loggerConfig['enabled']) {
             return $callback();
         }
 
-        $logger = $serviceLocator->get($config['sl_key']);
+        $logger = $serviceLocator->get($loggerConfig['logger_service_name']);
         if (! $logger instanceof LoggerInterface) {
             throw new DomainException('The logger must implement the psr-3 logger interface.');
         }
 
-        $options = new LoggerOptions($config['options']);
-        return new Logger($logger, $options, $callback());
+        return new Logger($logger, new LoggerOptions($loggerConfig['options']), $callback());
     }
 }

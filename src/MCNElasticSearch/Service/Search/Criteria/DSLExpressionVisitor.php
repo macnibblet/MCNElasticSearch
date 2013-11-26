@@ -39,86 +39,74 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\Service\Document;
+namespace MCNElasticSearch\Service\Search\Criteria;
 
-use ArrayAccess;
+use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Common\Collections\Expr\CompositeExpression as CommonCompositeExpression;
+use Doctrine\Common\Collections\Expr\ExpressionVisitor;
+use Doctrine\Common\Collections\Expr\Value;
 
 /**
- * Class DocumentEntity
- *
- * Used to pass around structured objects instead of array representatives of a document.
- *
- * @internal
+ * Class DSLExpressionVisitor
  */
-final class DocumentEntity implements ArrayAccess
+class DSLExpressionVisitor extends ExpressionVisitor
 {
     /**
-     * @var string|null
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $index;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var array
-     */
-    protected $body;
-
-    /**
-     * @param string      $index
-     * @param string      $type
-     * @param string|null $id
-     * @param array       $body
-     */
-    public function __construct($index, $type, $id = null, array $body = [])
-    {
-        $this->id    = $id === null ? null : (string) $id;
-        $this->type  = (string) $type;
-        $this->index = (string) $index;
-        $this->body  = $body;
-    }
-
-    /**
-     * {@Inheritdoc}
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->{$offset});
-    }
-
-    /**
-     * {@Inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        return $this->{$offset};
-    }
-
-    /**
-     * {@Inheritdoc}
+     * Converts a comparison expression into the target query language output.
      *
-     * @throws Exception\ReadOnlyException
+     * @param Comparison $comparison
+     *
+     * @return mixed
      */
-    public function offsetSet($offset, $value)
+    public function walkComparison(Comparison $comparison)
     {
-        throw new Exception\ReadOnlyException();
+        switch ($comparison->getOperator())
+        {
+            case Comparison::EQ:
+                return ['term' => [$comparison->getField() => $comparison->getValue()]];
+        }
     }
 
     /**
-     * {@Inheritdoc}
+     * Converts a value expression into the target query language part.
      *
-     * @throws Exception\ReadOnlyException
+     * @param Value $value
+     *
+     * @return mixed
      */
-    public function offsetUnset($offset)
+    public function walkValue(Value $value)
     {
-        throw new Exception\ReadOnlyException();
+        // TODO: Implement walkValue() method.
+    }
+
+    /**
+     * Converts a composite expression into the target query language output.
+     *
+     * @param CompositeExpression $expr
+     *
+     * @return mixed
+     */
+    public function walkCompositeExpression(CommonCompositeExpression $expr)
+    {
+        $children = array();
+
+        foreach ($expr->getExpressionList() as $child) {
+            $children[] = $this->dispatch($child);
+        }
+
+        switch ($expr->getType())
+        {
+            case CompositeExpression::TYPE_AND:
+                return ['and' => $children];
+
+            case CompositeExpression::TYPE_OR:
+                return ['or' => $children];
+
+            case CompositeExpression::TYPE_QUERY:
+                return ['query' => $children];
+
+            case CompositeExpression::TYPE_FILTERED:
+                return ['filtered' => $children];
+        }
     }
 }
