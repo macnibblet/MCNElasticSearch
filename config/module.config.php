@@ -44,6 +44,8 @@ use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
 use MCNElasticSearch\Service\SearchService;
 use MCNElasticSearch\ServiceFactory\Document\Writer\Adapter\ImmediateFactory;
+use MCNElasticSearch\Service\Document\Writer\Logger;
+use MCNElasticSearch\ServiceFactory\Document\Writer\LoggerFactory;
 
 return [
     'MCNElasticSearch' => [
@@ -52,6 +54,29 @@ return [
          * Client configuration
          */
         'client' => [],
+
+        /**
+         * Logging configuration
+         */
+        'logging' => [
+
+            /**
+             * If the logger should be enabled
+             */
+            'enabled' => false,
+
+            /**
+             * The key used to get the logger utility from the service locator
+             */
+            'sl_key'  => null,
+
+            /**
+             * Options that are passed to the MCNElasticSearch\Document\Writer\LoggerOptions
+             */
+            'options' => [
+                'logLevel' => 'notice'
+            ]
+        ],
 
         /**
          * Metadata configuration
@@ -75,7 +100,8 @@ return [
             ],
 
             'factories' => [
-                Immediate::class => ImmediateFactory::class
+                Immediate::class => ImmediateFactory::class,
+                Logger:class     => LoggerFactory::class
             ]
         ],
 

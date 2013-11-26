@@ -121,7 +121,7 @@ class DocumentService implements DocumentServiceInterface
             $metadata->getIndex(),
             $metadata->getType(),
             $id,
-            $hydrator->extract($object)
+            $data
         );
     }
 

@@ -45,6 +45,8 @@ use Elastica\Document;
 use Elastica\Response;
 use Elastica\Client;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
+use MCNElasticSearch\Service\Document\Writer\WriterInterface;
+use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MetadataServiceInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -60,7 +62,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    protected $client;
+    protected $writerManager;
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -79,16 +81,13 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->client = $this->getMockBuilder(Client::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
+        $this->writerManager         = $this->getMock(WriterPluginManager::class);
         $this->metadataService       = $this->getMock(MetadataServiceInterface::class);
         $this->hydratorPluginManager = $this->getMock(HydratorPluginManager::class);
 
         $this->service = new DocumentService(
-            $this->client,
             $this->metadataService,
+            $this->writerManager,
             $this->hydratorPluginManager
         );
     }
@@ -98,17 +97,17 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
         $object = new ArrayObject();
 
         return [
-            ['add', 'addDocuments', 'foo',   Exception\InvalidArgumentException::class],
-            ['add', 'addDocuments', $object, Exception\ObjectMetadataMissingException::class],
-            ['add', 'addDocuments', $object, null],
+            ['add', 'foo',   Exception\InvalidArgumentException::class],
+            ['add', $object, Exception\ObjectMetadataMissingException::class],
+            ['add', $object, null],
 
-            ['update', 'updateDocument', 'foo',   Exception\InvalidArgumentException::class],
-            ['update', 'updateDocument', $object, Exception\ObjectMetadataMissingException::class],
-            ['update', 'updateDocument', $object, null],
+            ['update', 'foo',   Exception\InvalidArgumentException::class],
+            ['update', $object, Exception\ObjectMetadataMissingException::class],
+            ['update', $object, null],
 
-            ['delete', 'deleteDocuments', 'foo',   Exception\InvalidArgumentException::class],
-            ['delete', 'deleteDocuments', $object, Exception\ObjectMetadataMissingException::class],
-            ['delete', 'deleteDocuments', $object, null],
+            ['delete', 'foo',   Exception\InvalidArgumentException::class],
+            ['delete', $object, Exception\ObjectMetadataMissingException::class],
+            ['delete', $object, null],
         ];
     }
 
@@ -118,11 +117,10 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
      * @dataProvider invalidObjectData
      *
      * @param string      $method       The service method to call
-     * @param string      $clientMethod The internal method on the elastica client
      * @param mixed       $object       The object passed to the service call
      * @param string|null $exception    Possible exception thrown by the transform method
      */
-    public function testTransform($method, $clientMethod, $object, $exception = null)
+    public function testTransform($method, $object, $exception = null)
     {
         if ($exception !== null) {
             $this->setExpectedException($exception);
@@ -130,7 +128,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
             $this->metadataService
                 ->expects($this->any())
                 ->method('getObjectMetadata')
-                ->will($this->throwException(new Exception\ObjectMetadataMissingException()));
+                ->will($this->throwException(new $exception()));
 
         } else {
 
@@ -148,97 +146,23 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
                 ->with(get_class($object))
                 ->will($this->returnValue($metadata));
 
+            $hydrator = $this->getMock(HydratorInterface::class);
+            $hydrator
+                ->expects($this->once())
+                ->method('extract')
+                ->will($this->returnValue(array()));
+
+            $this->writerManager
+                ->expects($this->once())
+                ->method('get')
+                ->will($this->returnValue($this->getMock(WriterInterface::class)));
+
             $this->hydratorPluginManager
                 ->expects($this->once())
                 ->method('get')
-                ->will($this->returnValue($this->getMock(HydratorInterface::class)));
-
-            $response = $this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock();
-            $response->expects($this->once())
-                    ->method('isOk')
-                    ->will($this->returnValue(true));
-
-            $this->client
-                ->expects($this->once())
-                ->method($clientMethod)
-                ->withAnyParameters()
-                ->will($this->returnValue($response));
+                ->will($this->returnValue($hydrator));
         }
 
         $this->service->{$method}($object);
-    }
-
-    public function eventData()
-    {
-        return [
-            ['add', 'addDocuments', true],
-            ['add', 'addDocuments', false],
-            ['update', 'updateDocument', true],
-            ['update', 'updateDocument', false],
-            ['delete', 'deleteDocuments', true],
-            ['delete', 'deleteDocuments', false],
-        ];
-    }
-
-    /**
-     * Checks that all the event parameters
-     *
-     * @dataProvider eventData
-     *
-     * @param string $method
-     * @param string $clientMethod
-     * @param bool   $responseIsOk
-     */
-    public function testEventParametersAndResponse($method, $clientMethod, $responseIsOk)
-    {
-        $object = new ArrayObject();
-        $document = new Document();
-
-        $response = $this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock();
-        $response->expects($this->once())
-            ->method('isOk')
-            ->will($this->returnValue($responseIsOk));
-
-        if (! $responseIsOk) {
-            $this->setExpectedException(Exception\RuntimeException::class);
-        }
-
-        $service = $this->getMockBuilder(DocumentService::class)
-                        ->setConstructorArgs([$this->client, $this->metadataService, $this->hydratorPluginManager])
-                        ->setMethods(['transform', 'getEventManager'])
-                        ->getMock();
-
-        $service->expects($this->once())
-                ->method('transform')
-                ->with($object)
-                ->will($this->returnValue($document));
-
-        $eventManager = $this->getMock(EventManagerInterface::class);
-        $eventManager->expects($this->at(0))
-            ->method('trigger')
-            ->with($method . '.pre', $service, ['document' => $document, 'object' => $object]);
-
-        $eventManager->expects($this->at(1))
-            ->method('trigger')
-            ->with(
-                $method . '.post',
-                $service,
-                [
-                    'document' => $document,
-                    'object' => $object,
-                    'response' => $response
-                ]
-            );
-
-        $service->expects($this->exactly(2))
-                ->method('getEventManager')
-                ->will($this->returnValue($eventManager));
-
-        $this->client
-            ->expects($this->once())
-            ->method($clientMethod)
-            ->will($this->returnValue($response));
-
-        $service->{$method}($object);
     }
 }

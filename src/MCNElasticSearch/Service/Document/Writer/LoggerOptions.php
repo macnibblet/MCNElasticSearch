@@ -33,32 +33,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Document\Writer;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Psr\Log\LogLevel;
+use Zend\Stdlib\AbstractOptions;
 
 /**
- * Class ClientServiceFactory
+ * Class LoggerOptions
  */
-class MetadataServiceFactory implements FactoryInterface
+class LoggerOptions extends AbstractOptions
 {
     /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $sl
-     *
-     * @return \Elasticsearch\Client
+     * @var string
      */
-    public function createService(ServiceLocatorInterface $sl)
+    protected $logLevel = LogLevel::NOTICE;
+
+    /**
+     * @param string $logLevel
+     */
+    public function setLogLevel($logLevel)
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        $this->logLevel = $logLevel;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogLevel()
+    {
+        return $this->logLevel;
     }
 }

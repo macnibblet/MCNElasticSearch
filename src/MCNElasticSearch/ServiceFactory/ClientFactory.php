@@ -40,7 +40,7 @@
 
 namespace MCNElasticSearch\ServiceFactory;
 
-use Elastica\Client;
+use Elasticsearch\Client;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**

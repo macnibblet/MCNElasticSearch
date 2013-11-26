@@ -41,7 +41,7 @@
 
 namespace MCNElasticSearch\ServiceFactory\Document\Writer\Adapter;
 
-use Elastica\Client;
+use Elasticsearch\Client;
 use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

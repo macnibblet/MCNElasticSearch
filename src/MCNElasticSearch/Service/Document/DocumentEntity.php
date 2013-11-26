@@ -41,6 +41,8 @@
 
 namespace MCNElasticSearch\Service\Document;
 
+use ArrayAccess;
+
 /**
  * Class DocumentEntity
  *
@@ -48,27 +50,27 @@ namespace MCNElasticSearch\Service\Document;
  *
  * @internal
  */
-class DocumentEntity implements \ArrayAccess
+final class DocumentEntity implements ArrayAccess
 {
     /**
      * @var string|null
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $index;
+    protected $index;
 
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var array
      */
-    private $body;
+    protected $body;
 
     /**
      * @param string      $index

@@ -38,12 +38,14 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-use Elastica\Client;
+use Elasticsearch\Client;
+use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
 use MCNElasticSearch\Service\MetadataService;
 use MCNElasticSearch\Service\SearchService;
 use MCNElasticSearch\ServiceFactory\ClientFactory;
+use MCNElasticSearch\ServiceFactory\Document\Writer\WriterPluginManagerFactory;
 use MCNElasticSearch\ServiceFactory\MappingServiceFactory;
 use MCNElasticSearch\ServiceFactory\DocumentServiceFactory;
 use MCNElasticSearch\ServiceFactory\MetadataServiceFactory;
@@ -54,10 +56,11 @@ use MCNElasticSearch\ServiceFactory\SearchServiceFactory;
  */
 return [
     'factories' => [
-        Client::class          => ClientFactory::class,
-        SearchService::class   => SearchServiceFactory::class,
-        MappingService::class  => MappingServiceFactory::class,
-        DocumentService::class => DocumentServiceFactory::class,
-        MetadataService::class => MetadataServiceFactory::class
+        Client::class              => ClientFactory::class,
+        SearchService::class       => SearchServiceFactory::class,
+        MappingService::class      => MappingServiceFactory::class,
+        DocumentService::class     => DocumentServiceFactory::class,
+        MetadataService::class     => MetadataServiceFactory::class,
+        WriterPluginManager::class => WriterPluginManagerFactory::class
     ]
 ];

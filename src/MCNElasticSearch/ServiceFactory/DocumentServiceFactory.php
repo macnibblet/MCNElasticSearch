@@ -40,7 +40,8 @@
 
 namespace MCNElasticSearch\ServiceFactory;
 
-use Elastica\Client;
+use Elasticsearch\Client;
+use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MetadataService;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -59,8 +60,8 @@ class DocumentServiceFactory extends AbstractFactory
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $service = new DocumentService(
-            $serviceLocator->get(Client::class),
             $serviceLocator->get(MetadataService::class),
+            $serviceLocator->get(WriterPluginManager::class),
             $serviceLocator->get('hydratorManager')
         );
 
