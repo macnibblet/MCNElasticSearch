@@ -38,9 +38,12 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
+use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
+use MCNElasticSearch\Service\Document\Writer\Logger;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
 use MCNElasticSearch\Service\SearchService;
+use Psr\Log\LogLevel;
 
 return [
     'MCNElasticSearch' => [
