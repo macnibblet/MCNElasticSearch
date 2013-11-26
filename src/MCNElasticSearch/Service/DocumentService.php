@@ -85,7 +85,7 @@ class DocumentService implements DocumentServiceInterface
     /**
      * Retrieve the object meta data
      *
-     * @param mixed $object
+     * @param $object
      *
      * @throws Exception\InvalidArgumentException
      * @throws Exception\ObjectMetadataMissingException
