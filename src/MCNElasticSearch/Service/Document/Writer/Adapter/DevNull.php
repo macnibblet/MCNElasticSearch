@@ -46,6 +46,8 @@ use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 
 /**
  * Class DevNull
+ *
+ * To infinity and beyond
  */
 class DevNull implements WriterInterface
 {

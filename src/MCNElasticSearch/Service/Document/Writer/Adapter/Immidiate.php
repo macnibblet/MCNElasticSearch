@@ -47,6 +47,8 @@ use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 
 /**
  * Class Immediate
+ *
+ * A very basic writer that just pushes everything directly to elastic search
  */
 class Immediate implements WriterInterface
 {
