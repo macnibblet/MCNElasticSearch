@@ -101,7 +101,13 @@ return [
 
             'factories' => [
                 Immediate::class => ImmediateFactory::class,
-                Logger:class     => LoggerFactory::class
+                Logger::class    => LoggerFactory::class
+            ],
+
+            'delegators' => [
+                Immediate::class => [
+                    Logger::class
+                ]
             ]
         ],
 
