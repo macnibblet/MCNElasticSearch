@@ -94,7 +94,9 @@ return [
              */
             'types' => []
         ],
-
+        /**
+         * Plugin manager for the different writers available
+         */
         'writer_manager' => [
             'invokables' => [
                 DevNull::class => DevNull::class
@@ -103,12 +105,6 @@ return [
             'factories' => [
                 Immediate::class => ImmediateFactory::class,
                 Logger::class    => LoggerFactory::class
-            ],
-
-            'delegators' => [
-                Immediate::class => [
-                    Logger::class
-                ]
             ]
         ],
 

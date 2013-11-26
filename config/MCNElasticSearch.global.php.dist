@@ -66,6 +66,40 @@ return [
             'types' => []
         ],
 
+        /**
+         * Logging configuration
+         */
+        'logging' => [
+
+            /**
+             * If the logger should be enabled
+             */
+            'enabled' => false,
+
+            /**
+             * The key used to get the logger utility from the service locator
+             */
+            'logger_service_name'  => null,
+
+            /**
+             * Options that are passed to the MCNElasticSearch\Document\Writer\LoggerOptions
+             */
+            'options' => [
+                'logLevel' => LogLevel::NOTICE
+            ]
+        ],
+
+        /**
+         * Plugin manager for the different writers available
+         */
+        'writer_manager' => [
+            'delegators' => [
+                Immediate::class => [
+                    Logger::class
+                ]
+            ]
+        ],
+
         DocumentService::class => [
             'listeners' => []
         ],
