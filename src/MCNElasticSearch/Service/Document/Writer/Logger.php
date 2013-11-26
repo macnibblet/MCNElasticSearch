@@ -133,7 +133,6 @@ class Logger implements WriterInterface
 
         $message = sprintf(
             'created new document type: %s, index: %s',
-            $document['id'],
             $document['type'],
             $document['index']
         );
