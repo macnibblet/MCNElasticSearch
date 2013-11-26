@@ -51,6 +51,11 @@ namespace MCNElasticSearch\Service\Document;
 class DocumentEntity implements \ArrayAccess
 {
     /**
+     * @var string|null
+     */
+    private $id;
+
+    /**
      * @var string
      */
     private $index;
@@ -73,6 +78,7 @@ class DocumentEntity implements \ArrayAccess
      */
     public function __construct($index, $type, $id = null, array $body = [])
     {
+        $this->id    = $id;
         $this->type  = $type;
         $this->body  = $body;
         $this->index = $index;
