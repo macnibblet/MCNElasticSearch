@@ -76,6 +76,13 @@ class ObjectMetadataOptions extends AbstractOptions
     protected $hydrator;
 
     /**
+     *
+     *
+     * @var string
+     */
+    protected $writer = 'immediate';
+
+    /**
      * FQCN of the object class name
      *
      * @var string|null
@@ -166,5 +173,21 @@ class ObjectMetadataOptions extends AbstractOptions
     public function getIndex()
     {
         return $this->index;
+    }
+
+    /**
+     * @param string $writer
+     */
+    public function setWriter($writer)
+    {
+        $this->writer = $writer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWriter()
+    {
+        return $this->writer;
     }
 }

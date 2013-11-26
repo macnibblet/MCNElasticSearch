@@ -41,7 +41,8 @@
 
 namespace MCNElasticSearch\Service\Document\Writer\Adapter;
 
-use Elastica\Client;
+use Elasticsearch\Client;
+use MCNElasticSearch\Service\Document\DocumentEntity;
 use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 
 /**
@@ -50,15 +51,51 @@ use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 class Immediate implements WriterInterface
 {
     /**
-     * @var
+     * @var \Elasticsearch\Client
      */
-    private $client;
+    protected $client;
 
     /**
-     * @param $client
+     * @param Client $client
      */
     public function __construct(Client $client)
     {
         $this->client = $client;
+    }
+
+    /**
+     * Update a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function update(DocumentEntity $document)
+    {
+        $this->client->update($document);
+    }
+
+    /**
+     * Delete a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function delete(DocumentEntity $document)
+    {
+        $this->client->delete($document);
+    }
+
+    /**
+     * Insert a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function insert(DocumentEntity $document)
+    {
+        $this->client->index($document);
     }
 }

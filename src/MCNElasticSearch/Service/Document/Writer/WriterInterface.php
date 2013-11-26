@@ -41,12 +41,37 @@
 
 namespace MCNElasticSearch\Service\Document\Writer;
 
+use MCNElasticSearch\Service\Document\DocumentEntity;
+
 /**
  * Interface WriterInterface
  */
 interface WriterInterface
 {
-    public function update();
-    public function delete();
-    public function insert();
+    /**
+     * Update a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function update(DocumentEntity $document);
+
+    /**
+     * Delete a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function delete(DocumentEntity $document);
+
+    /**
+     * Insert a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function insert(DocumentEntity $document);
 }

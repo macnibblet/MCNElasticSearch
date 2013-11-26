@@ -41,6 +41,7 @@
 
 namespace MCNElasticSearch\Service\Document\Writer\Adapter;
 
+use MCNElasticSearch\Service\Document\DocumentEntity;
 use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 
 /**
@@ -48,4 +49,36 @@ use MCNElasticSearch\Service\Document\Writer\WriterInterface;
  */
 class DevNull implements WriterInterface
 {
+    /**
+     * Update a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function update(DocumentEntity $document)
+    {
+    }
+
+    /**
+     * Delete a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function delete(DocumentEntity $document)
+    {
+    }
+
+    /**
+     * Insert a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function insert(DocumentEntity $document)
+    {
+    }
 }

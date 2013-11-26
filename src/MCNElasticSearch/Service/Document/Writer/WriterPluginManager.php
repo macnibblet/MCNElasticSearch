@@ -46,6 +46,8 @@ use Zend\ServiceManager\Exception;
 
 /**
  * Class WriterPluginManager
+ *
+ * @method \MCNElasticSearch\Service\Document\Writer\WriterInterface get($name, $options = array(), $usePeeringServiceManagers = true)
  */
 class WriterPluginManager extends AbstractPluginManager
 {
