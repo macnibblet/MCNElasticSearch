@@ -33,32 +33,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Document\Writer\Exception;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use MCNElasticSearch\Service\Exception as ServiceException;
 
 /**
- * Class ClientServiceFactory
+ * Class InvalidArgumentException
  */
-class MetadataServiceFactory implements FactoryInterface
+class InvalidArgumentException extends ServiceException\InvalidArgumentException
 {
-    /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $sl
-     *
-     * @return \Elasticsearch\Client
-     */
-    public function createService(ServiceLocatorInterface $sl)
-    {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
-    }
 }

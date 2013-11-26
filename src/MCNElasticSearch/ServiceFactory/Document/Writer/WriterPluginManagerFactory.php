@@ -33,32 +33,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\ServiceFactory\Document\Writer;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
+use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
+use MCNElasticSearch\ServiceFactory\Exception\MissingConfigurationException;
+use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class ClientServiceFactory
+ * Class WriterPluginManagerFactory
  */
-class MetadataServiceFactory implements FactoryInterface
+class WriterPluginManagerFactory implements FactoryInterface
 {
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $sl
+     * @param ServiceLocatorInterface $serviceLocator
      *
-     * @return \Elasticsearch\Client
+     * @throws \MCNElasticSearch\ServiceFactory\Exception\MissingConfigurationException
+     *
+     * @return \MCNElasticSearch\Service\Document\Writer\WriterPluginManager
      */
-    public function createService(ServiceLocatorInterface $sl)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        $config = $serviceLocator->get('Config');
+
+        if (! isset($config['MCNElasticSearch']['writer_manager'])) {
+            throw new MissingConfigurationException(
+                'Could not found the configuration key "writer_manager" in MCNElasticSearch'
+            );
+        }
+
+        return new WriterPluginManager(
+            new Config($config['MCNElasticSearch']['writer_manager'])
+        );
     }
 }

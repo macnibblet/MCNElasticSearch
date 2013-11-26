@@ -33,32 +33,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\ServiceFactory\Document\Writer\Adapter;
 
 use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
+use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class ClientServiceFactory
+ * Class ImmediateFactory
  */
-class MetadataServiceFactory implements FactoryInterface
+class ImmediateFactory implements FactoryInterface
 {
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $sl
+     * @param ServiceLocatorInterface $serviceLocator
      *
-     * @return \Elasticsearch\Client
+     * @return mixed
      */
-    public function createService(ServiceLocatorInterface $sl)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        return new Immediate($serviceLocator->get(Client::class));
     }
 }

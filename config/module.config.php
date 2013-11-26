@@ -38,9 +38,15 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
+use MCNElasticSearch\Service\Document\Writer\Adapter\DevNull;
+use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
 use MCNElasticSearch\Service\SearchService;
+use MCNElasticSearch\ServiceFactory\Document\Writer\Adapter\ImmediateFactory;
+use MCNElasticSearch\Service\Document\Writer\Logger;
+use MCNElasticSearch\ServiceFactory\Document\Writer\LoggerFactory;
+use Psr\Log\LogLevel;
 
 return [
     'MCNElasticSearch' => [
@@ -49,6 +55,29 @@ return [
          * Client configuration
          */
         'client' => [],
+
+        /**
+         * Logging configuration
+         */
+        'logging' => [
+
+            /**
+             * If the logger should be enabled
+             */
+            'enabled' => false,
+
+            /**
+             * The key used to get the logger utility from the service locator
+             */
+            'logger_service_name'  => null,
+
+            /**
+             * Options that are passed to the MCNElasticSearch\Document\Writer\LoggerOptions
+             */
+            'options' => [
+                'logLevel' => LogLevel::NOTICE
+            ]
+        ],
 
         /**
          * Metadata configuration
@@ -65,9 +94,22 @@ return [
              */
             'types' => []
         ],
+        /**
+         * Plugin manager for the different writers available
+         */
+        'writer_manager' => [
+            'invokables' => [
+                DevNull::class => DevNull::class
+            ],
+
+            'factories' => [
+                Immediate::class => ImmediateFactory::class,
+                Logger::class    => LoggerFactory::class
+            ]
+        ],
 
         DocumentService::class => [
-            'listeners' => []
+            'listeners' => [],
         ],
 
         SearchService::class => [

@@ -33,77 +33,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearchTest\Service\Search\PaginatorAdapter;
-
-use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Persistence\ObjectRepository;
-use Elastica\SearchableInterface;
-use MCNElasticSearch\Options\ObjectMetadataOptions;
-use MCNElasticSearch\Service\Search\PaginatorAdapter\Doctrine;
-use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions;
+namespace MCNElasticSearch\ServiceFactory\Exception;
 
 /**
- * Class DoctrineTest
+ * Class DomainException
  */
-class DoctrineTest extends \PHPUnit_Framework_TestCase
+class DomainException extends \DomainException implements ExceptionInterface
 {
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $searchable;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $repository;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $metadata;
-
-    /**
-     * @var \MCNElasticSearch\Service\Search\PaginatorAdapter\Doctrine
-     */
-    protected $adapter;
-
-    /**
-     * @var DoctrineOptions
-     */
-    protected $options;
-
-    protected function setUp()
-    {
-        $this->searchable = $this->getMock(SearchableInterface::class);
-        $this->repository = $this->getMock(ObjectRepository::class);
-        $this->metadata   = $this->getMock(ObjectMetadataOptions::class);
-        $this->options    = new DoctrineOptions();
-
-        $this->adapter = new Doctrine(
-            $this->repository,
-            $this->metadata,
-            $this->options
-        );
-
-        $this->adapter->setSearchable($this->searchable);
-    }
-
-    public function testGetItems_ShortCircuitOnZeroCount()
-    {
-        $this->searchable
-            ->expects($this->once())
-            ->method('count')
-            ->will($this->returnValue(0));
-
-        $this->searchable
-            ->expects($this->never())
-            ->method('search');
-
-        $this->adapter->getItems(0, 10);
-    }
 }

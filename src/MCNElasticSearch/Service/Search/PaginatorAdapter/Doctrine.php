@@ -42,8 +42,8 @@ namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Elastica\Query;
-use Elastica\ResultSet;
+use Elasticsearch\Query;
+use Elasticsearch\ResultSet;
 use MCNElasticSearch\Options\ObjectMetadataOptions;
 use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions as Options;
 
@@ -111,7 +111,7 @@ class Doctrine extends AbstractAdapter
      * When doing queries against elastic search one can aggregate meta information and this is where we extract it
      * from each result.
      *
-     * @param \Elastica\ResultSet $results
+     * @param \Elasticsearch\ResultSet $results
      *
      * @return array
      */
@@ -119,7 +119,7 @@ class Doctrine extends AbstractAdapter
     {
         $dataSet = [];
 
-        /** @var $result \Elastica\Result */
+        /** @var $result \Elasticsearch\Result */
         foreach ($results as $result) {
             $data = [];
             foreach ($result->getHit() as $key => $value) {

@@ -40,8 +40,8 @@
 
 namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
-use Elastica\Query;
-use Elastica\SearchableInterface;
+use Elasticsearch\Query;
+use Elasticsearch\SearchableInterface;
 use Zend\Paginator\Adapter\AdapterInterface;
 
 /**
@@ -50,12 +50,12 @@ use Zend\Paginator\Adapter\AdapterInterface;
 abstract class AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var \Elastica\Query
+     * @var \Elasticsearch\Query
      */
     protected $query;
 
     /**
-     * @var \Elastica\SearchableInterface
+     * @var \Elasticsearch\SearchableInterface
      */
     protected $searchable;
 

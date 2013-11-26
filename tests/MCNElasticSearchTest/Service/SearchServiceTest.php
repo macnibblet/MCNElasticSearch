@@ -1,4 +1,11 @@
 <?php
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Persistence\ObjectManager;
+use Elasticsearch\Client;
+use MCNElasticSearch\Service\MetadataServiceInterface;
+use MCNElasticSearch\Service\Search\Criteria\ExpressionBuilder;
+use MCNElasticSearch\Service\SearchService;
+
 /**
  * Copyright (c) 2011-2013 Antoine Hedgecock.
  * All rights reserved.
@@ -33,31 +40,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-
-namespace MCNElasticSearchTest\Service;
-
-use Closure;
-use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository;
-use Elastica\Client;
-use Elastica\Index;
-use Elastica\Query;
-use Elastica\Type;
-use MCNElasticSearch\Options\ObjectMetadataOptions;
-use MCNElasticSearch\Service\MetadataServiceInterface;
-use MCNElasticSearch\Service\Search\PaginatorAdapter\AbstractAdapter;
-use MCNElasticSearch\Service\Search\PaginatorAdapter\Doctrine;
-use MCNElasticSearch\Service\Search\PaginatorAdapter\Raw;
-use MCNElasticSearch\Service\SearchService;
-use MCNElasticSearch\Service\SearchServiceInterface;
-use PHPUnit_Framework_TestCase;
-use MCNElasticSearch\Service\Exception;
-use Zend\Paginator\Paginator;
 
 /**
  * Class SearchServiceTest
@@ -86,10 +73,7 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->client = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
+        $this->client          = $this->getMock(Client::class);
         $this->objectManager   = $this->getMock(ObjectManager::class);
         $this->metadataService = $this->getMock(MetadataServiceInterface::class);
 
@@ -100,74 +84,33 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testInvalidHydration()
+    public function testCriteria()
     {
-        $mode = 'do-not-exist-hydration-mode';
+        $expr = new ExpressionBuilder();
 
-        $this->setExpectedException(
-            Exception\InvalidArgumentException::class,
-            sprintf('Unknown hydration mode %s', $mode)
+        $query = Criteria::create();
+        $query->andWhere(
+            $expr->query(
+                $expr->filtered(
+                    $expr->andX(
+                        $expr->eq('term', 'foo'),
+                        $expr->eq('term', 'foo')
+                    )
+                )
+            )
         );
 
-        $this->service->search('stdClass', new Query(), $mode);
-    }
+        $query->andWhere(
+            $expr->query(
+                $expr->filtered(
+                    $expr->andX(
+                        $expr->eq('term', 'foo'),
+                        $expr->eq('term', 'foo')
+                    )
+                )
+            )
+        );
 
-    public function dataHydrationModes()
-    {
-        $doctrineSetup = function () {
-            $this->objectManager
-                ->expects($this->once())
-                ->method('getRepository')
-                ->will($this->returnValue($this->getMock(ObjectRepository::class)));
-        };
-
-        return [
-            [SearchServiceInterface::HYDRATE_RAW, Raw::class],
-            [SearchServiceInterface::HYDRATE_DOCTRINE_OBJECT, Doctrine::class, $doctrineSetup]
-        ];
-    }
-
-    /**
-     * @dataProvider dataHydrationModes
-     *
-     * @param string $mode
-     * @param string $expectedAdapter
-     * @param callable $setup
-     */
-    public function testValidHydrationMode($mode, $expectedAdapter, callable $setup = null)
-    {
-        if ($setup !== null) {
-            $setup = Closure::bind($setup, $this);
-            $setup();
-        }
-
-        $metadata = new ObjectMetadataOptions();
-
-        $this->metadataService
-            ->expects($this->once())
-            ->method('getObjectMetadata')
-            ->with('stdClass')
-            ->will($this->returnValue($metadata));
-
-        $type  = $this->getMockBuilder(Type::class)->disableOriginalConstructor()->getMock();
-        $index = $this->getMockBuilder(Index::class)->disableOriginalConstructor()->getMock();
-
-        $index->expects($this->once())
-              ->method('getType')
-              ->will($this->returnValue($type));
-
-        $this->client
-            ->expects($this->once())
-            ->method('getIndex')
-            ->will($this->returnValue($index));
-
-        $query = new Query();
-
-        $paginator = $this->service->search('stdClass', $query, $mode);
-        $this->assertInstanceOf(Paginator::class, $paginator);
-
-        $adapter = $paginator->getAdapter();
-        $this->assertInstanceOf($expectedAdapter, $adapter);
-        $this->assertInstanceOf(AbstractAdapter::class, $adapter);
+        $this->service->match($query);
     }
 }

@@ -40,9 +40,11 @@
 
 namespace MCNElasticSearch\Service;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
-use Elastica\Client;
-use Elastica\Query;
+use Elasticsearch\Client;
+use Elasticsearch\Query;
+use MCNElasticSearch\Service\Search\Criteria\DSLExpressionVisitor;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Paginator\Paginator;
 
@@ -64,12 +66,12 @@ class SearchService implements SearchServiceInterface
     protected $metadata;
 
     /**
-     * @var \Elastica\Client
+     * @var \Elasticsearch\Client
      */
     protected $client;
 
     /**
-     * @param \Elastica\Client         $client
+     * @param \Elasticsearch\Client         $client
      * @param MetadataServiceInterface $metadata
      * @param ObjectManager            $objectManager
      */
@@ -78,6 +80,14 @@ class SearchService implements SearchServiceInterface
         $this->client        = $client;
         $this->metadata      = $metadata;
         $this->objectManager = $objectManager;
+    }
+
+    public function match(Criteria $criteria)
+    {
+        $visitor = new DSLExpressionVisitor();
+        $dsl = $visitor->dispatch($criteria->getWhereExpression());
+
+        var_dump($dsl);
     }
 
     /**

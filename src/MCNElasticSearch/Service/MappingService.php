@@ -40,10 +40,10 @@
 
 namespace MCNElasticSearch\Service;
 
-use Elastica\Client;
-use Elastica\Exception\ResponseException;
-use Elastica\Type\Mapping;
-use Elastica\Type;
+use Elasticsearch\Client;
+use Elasticsearch\Exception\ResponseException;
+use Elasticsearch\Type\Mapping;
+use Elasticsearch\Type;
 use MCNElasticSearch\Options\TypeMappingOptions;
 use Zend\EventManager\EventManagerAwareTrait;
 
@@ -55,7 +55,7 @@ class MappingService implements MappingServiceInterface
     use EventManagerAwareTrait;
 
     /**
-     * @var \Elastica\Client
+     * @var \Elasticsearch\Client
      */
     protected $client;
 
@@ -65,7 +65,7 @@ class MappingService implements MappingServiceInterface
     protected $metadata;
 
     /**
-     * @param \Elastica\Client $client
+     * @param \Elasticsearch\Client $client
      * @param MetadataService  $metadata
      */
     public function __construct(Client $client, MetadataService $metadata)

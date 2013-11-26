@@ -40,6 +40,7 @@
 
 namespace MCNElasticSearch\Options;
 
+use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
 use Zend\Stdlib\AbstractOptions;
 
 /**
@@ -69,11 +70,18 @@ class ObjectMetadataOptions extends AbstractOptions
     protected $index;
 
     /**
-     * The name of the hydrator to load from they hydrator manager
+     * The name of the hydrator to load from the hydrator manager
      *
      * @var string|null
      */
     protected $hydrator;
+
+    /**
+     * The writer to use for pushing data to elastic search
+     *
+     * @var string
+     */
+    protected $writer = Immediate::class;
 
     /**
      * FQCN of the object class name
@@ -166,5 +174,21 @@ class ObjectMetadataOptions extends AbstractOptions
     public function getIndex()
     {
         return $this->index;
+    }
+
+    /**
+     * @param string $writer
+     */
+    public function setWriter($writer)
+    {
+        $this->writer = $writer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWriter()
+    {
+        return $this->writer;
     }
 }

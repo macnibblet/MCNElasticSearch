@@ -102,7 +102,7 @@ class MappingController extends AbstractActionController
     {
         /**
          * @var $options  \MCNElasticSearch\Options\TypeMappingOptions
-         * @var $response \Elastica\Response
+         * @var $response \Elasticsearch\Response
          */
         $options  = $event->getParam('options');
         $response = $event->getParam('response');

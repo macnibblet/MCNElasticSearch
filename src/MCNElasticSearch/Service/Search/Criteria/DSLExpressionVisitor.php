@@ -33,45 +33,80 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Search\Criteria;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
-use MCNElasticSearch\Service\DocumentService;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Common\Collections\Expr\CompositeExpression as CommonCompositeExpression;
+use Doctrine\Common\Collections\Expr\ExpressionVisitor;
+use Doctrine\Common\Collections\Expr\Value;
 
 /**
- * Class DocumentServiceFactory
+ * Class DSLExpressionVisitor
  */
-class DocumentServiceFactory extends AbstractFactory
+class DSLExpressionVisitor extends ExpressionVisitor
 {
     /**
-     * Create service
+     * Converts a comparison expression into the target query language output.
      *
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param Comparison $comparison
+     *
      * @return mixed
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function walkComparison(Comparison $comparison)
     {
-        $service = new DocumentService(
-            $serviceLocator->get(MetadataService::class),
-            $serviceLocator->get(WriterPluginManager::class),
-            $serviceLocator->get('hydratorManager')
-        );
+        switch ($comparison->getOperator())
+        {
+            case Comparison::EQ:
+                return ['term' => [$comparison->getField() => $comparison->getValue()]];
+        }
+    }
 
-        $listeners = $this->getConfig($serviceLocator)[DocumentService::class]['listeners'];
-        foreach ($listeners as $listener) {
-            $service->getEventManager()->attach(
-                $serviceLocator->get($listener)
-            );
+    /**
+     * Converts a value expression into the target query language part.
+     *
+     * @param Value $value
+     *
+     * @return mixed
+     */
+    public function walkValue(Value $value)
+    {
+        // TODO: Implement walkValue() method.
+    }
+
+    /**
+     * Converts a composite expression into the target query language output.
+     *
+     * @param CompositeExpression $expr
+     *
+     * @return mixed
+     */
+    public function walkCompositeExpression(CommonCompositeExpression $expr)
+    {
+        $children = array();
+
+        foreach ($expr->getExpressionList() as $child) {
+            $children[] = $this->dispatch($child);
         }
 
-        return $service;
+        switch ($expr->getType())
+        {
+            case CompositeExpression::TYPE_AND:
+                return ['and' => $children];
+
+            case CompositeExpression::TYPE_OR:
+                return ['or' => $children];
+
+            case CompositeExpression::TYPE_QUERY:
+                return ['query' => $children];
+
+            case CompositeExpression::TYPE_FILTERED:
+                return ['filtered' => $children];
+        }
     }
 }

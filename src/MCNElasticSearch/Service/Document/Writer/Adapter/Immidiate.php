@@ -33,32 +33,71 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Document\Writer\Adapter;
 
 use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use MCNElasticSearch\Service\Document\DocumentEntity;
+use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 
 /**
- * Class ClientServiceFactory
+ * Class Immediate
+ *
+ * A very basic writer that just pushes everything directly to elastic search
  */
-class MetadataServiceFactory implements FactoryInterface
+class Immediate implements WriterInterface
 {
     /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $sl
-     *
-     * @return \Elasticsearch\Client
+     * @var \Elasticsearch\Client
      */
-    public function createService(ServiceLocatorInterface $sl)
+    protected $client;
+
+    /**
+     * @param Client $client
+     */
+    public function __construct(Client $client)
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        $this->client = $client;
+    }
+
+    /**
+     * Update a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function update(DocumentEntity $document)
+    {
+        $this->client->update($document);
+    }
+
+    /**
+     * Delete a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function delete(DocumentEntity $document)
+    {
+        $this->client->delete($document);
+    }
+
+    /**
+     * Insert a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function insert(DocumentEntity $document)
+    {
+        $this->client->index($document);
     }
 }

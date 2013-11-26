@@ -33,32 +33,92 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Document;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use ArrayAccess;
 
 /**
- * Class ClientServiceFactory
+ * Class DocumentEntity
+ *
+ * Used to pass around structured objects instead of array representatives of a document.
+ *
+ * @internal
  */
-class MetadataServiceFactory implements FactoryInterface
+final class DocumentEntity implements ArrayAccess
 {
     /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $sl
-     *
-     * @return \Elasticsearch\Client
+     * @var string|null
      */
-    public function createService(ServiceLocatorInterface $sl)
+    protected $id;
+
+    /**
+     * @var string
+     */
+    protected $index;
+
+    /**
+     * @var string
+     */
+    protected $type;
+
+    /**
+     * @var array
+     */
+    protected $body;
+
+    /**
+     * @param string      $index
+     * @param string      $type
+     * @param string|null $id
+     * @param array       $body
+     */
+    public function __construct($index, $type, $id = null, array $body = [])
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        $this->id    = $id === null ? null : (string) $id;
+        $this->type  = (string) $type;
+        $this->index = (string) $index;
+        $this->body  = $body;
+    }
+
+    /**
+     * {@Inheritdoc}
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->{$offset});
+    }
+
+    /**
+     * {@Inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        return $this->{$offset};
+    }
+
+    /**
+     * {@Inheritdoc}
+     *
+     * @throws Exception\ReadOnlyException
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw new Exception\ReadOnlyException();
+    }
+
+    /**
+     * {@Inheritdoc}
+     *
+     * @throws Exception\ReadOnlyException
+     */
+    public function offsetUnset($offset)
+    {
+        throw new Exception\ReadOnlyException();
     }
 }

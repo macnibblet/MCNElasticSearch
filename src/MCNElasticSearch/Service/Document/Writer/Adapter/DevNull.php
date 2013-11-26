@@ -33,32 +33,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Document\Writer\Adapter;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use MCNElasticSearch\Service\Document\DocumentEntity;
+use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 
 /**
- * Class ClientServiceFactory
+ * Class DevNull
+ *
+ * To infinity and beyond
  */
-class MetadataServiceFactory implements FactoryInterface
+class DevNull implements WriterInterface
 {
     /**
-     * Create service
+     * Update a document
      *
-     * @param ServiceLocatorInterface $sl
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
      *
-     * @return \Elasticsearch\Client
+     * @return void
      */
-    public function createService(ServiceLocatorInterface $sl)
+    public function update(DocumentEntity $document)
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+    }
+
+    /**
+     * Delete a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function delete(DocumentEntity $document)
+    {
+    }
+
+    /**
+     * Insert a document
+     *
+     * @param \MCNElasticSearch\Service\Document\DocumentEntity $document
+     *
+     * @return void
+     */
+    public function insert(DocumentEntity $document)
+    {
     }
 }

@@ -33,32 +33,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Document\Writer;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\AbstractPluginManager;
+use Zend\ServiceManager\Exception;
 
 /**
- * Class ClientServiceFactory
+ * Class WriterPluginManager
+ *
+ * @method \MCNElasticSearch\Service\Document\Writer\WriterInterface get($name, $options = array(), $usePeeringServiceManagers = true)
  */
-class MetadataServiceFactory implements FactoryInterface
+class WriterPluginManager extends AbstractPluginManager
 {
+    protected $autoAddInvokableClass = false;
+
     /**
-     * Create service
+     * Validate the plugin
      *
-     * @param ServiceLocatorInterface $sl
+     * Checks that the filter loaded is either a valid callback or an instance
+     * of FilterInterface.
      *
-     * @return \Elasticsearch\Client
+     * @param  mixed $plugin
+     *
+     * @throws \Zend\ServiceManager\Exception\InvalidArgumentException
+     *
+     * @return void
      */
-    public function createService(ServiceLocatorInterface $sl)
+    public function validatePlugin($plugin)
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        if ($plugin instanceof WriterInterface) {
+            return;
+        }
+
+        throw new Exception\InvalidArgumentException(sprintf(
+            'Plugin of type %s is invalid; must implement %s\WriterInterface',
+            (is_object($plugin) ? get_class($plugin) : gettype($plugin)),
+            __NAMESPACE__
+        ));
     }
 }

@@ -33,32 +33,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
+ * @author      Jonas Eriksson <jonas@pmg.se>
  *
  * @copyright   2011-2013 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\ServiceFactory;
+namespace MCNElasticSearch\Service\Search\Criteria;
 
-use Elasticsearch\Client;
-use MCNElasticSearch\Service\MetadataService;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Doctrine\Common\Collections\ExpressionBuilder as CommonExpressionBuilder;
 
-/**
- * Class ClientServiceFactory
- */
-class MetadataServiceFactory implements FactoryInterface
+class ExpressionBuilder extends CommonExpressionBuilder
 {
-    /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $sl
-     *
-     * @return \Elasticsearch\Client
-     */
-    public function createService(ServiceLocatorInterface $sl)
+    public function filtered()
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        return new CompositeExpression(CompositeExpression::TYPE_FILTERED, func_get_args());
+    }
+
+    public function query()
+    {
+        return new CompositeExpression(CompositeExpression::TYPE_QUERY, func_get_args());
     }
 }

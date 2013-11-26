@@ -40,7 +40,7 @@
 
 namespace MCNElasticSearch\Service;
 
-use Elastica\Query;
+use Elasticsearch\Query;
 use Zend\EventManager\EventsCapableInterface;
 
 /**
@@ -55,7 +55,7 @@ interface SearchServiceInterface extends EventsCapableInterface
      * Perform a search
      *
      * @param string          $objectClassName
-     * @param \Elastica\Query $query
+     * @param \Elasticsearch\Query $query
      * @param string          $hydration
      *
      * @return \Zend\Paginator\Paginator
