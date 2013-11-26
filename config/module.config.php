@@ -76,11 +76,6 @@ return [
 
             'factories' => [
                 Immediate::class => ImmediateFactory::class
-            ],
-
-            'aliases' => [
-                'devnull'   => DevNull::class,
-                'immediate' => Immediate::class
             ]
         ],
 

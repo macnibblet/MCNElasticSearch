@@ -44,7 +44,7 @@ namespace MCNElasticSearch\Service\Document;
 /**
  * Class DocumentEntity
  *
- * Used to pass around structured objects of a document.
+ * Used to pass around structured objects instead of array representatives of a document.
  *
  * @internal
  */
@@ -78,10 +78,10 @@ class DocumentEntity implements \ArrayAccess
      */
     public function __construct($index, $type, $id = null, array $body = [])
     {
-        $this->id    = $id;
-        $this->type  = $type;
+        $this->id    = $id === null ?: (string) $id;
+        $this->type  = (string) $type;
+        $this->index = (string) $index;
         $this->body  = $body;
-        $this->index = $index;
     }
 
     /**
