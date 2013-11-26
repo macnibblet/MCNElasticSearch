@@ -86,9 +86,6 @@ return [
 
         DocumentService::class => [
             'listeners' => [],
-            'options'   => [
-                'default_writer' => Immediate::class
-            ]
         ],
 
         SearchService::class => [
