@@ -66,9 +66,10 @@ class DocumentEntity implements \ArrayAccess
     private $body;
 
     /**
-     * @param string $index
-     * @param string $type
-     * @param array  $body
+     * @param string      $index
+     * @param string      $type
+     * @param string|null $id
+     * @param array       $body
      */
     public function __construct($index, $type, $id = null, array $body = [])
     {
@@ -78,67 +79,7 @@ class DocumentEntity implements \ArrayAccess
     }
 
     /**
-     * @param array $body
-     */
-    public function setBody($body)
-    {
-        $this->body = $body;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * @param string $index
-     */
-    public function setIndex($index)
-    {
-        $this->index = $index;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIndex()
-    {
-        return $this->index;
-    }
-
-    /**
-     * @param string $type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Whether a offset exists
-     *
-     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
+     * {@Inheritdoc}
      */
     public function offsetExists($offset)
     {
@@ -146,16 +87,7 @@ class DocumentEntity implements \ArrayAccess
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to retrieve
-     *
-     * @link http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     *
-     * @return mixed Can return all value types.
+     * {@Inheritdoc}
      */
     public function offsetGet($offset)
     {
@@ -163,39 +95,22 @@ class DocumentEntity implements \ArrayAccess
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to set
+     * {@Inheritdoc}
      *
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     *
-     * @return void
+     * @throws Exception\ReadOnlyException
      */
     public function offsetSet($offset, $value)
     {
-        $this->{$offset} = $value;
+        throw new Exception\ReadOnlyException();
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to unset
+     * {@Inheritdoc}
      *
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @return void
+     * @throws Exception\ReadOnlyException
      */
     public function offsetUnset($offset)
     {
-        unset($this->{$offset});
+        throw new Exception\ReadOnlyException();
     }
 }
