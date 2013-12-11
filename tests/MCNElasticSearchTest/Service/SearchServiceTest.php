@@ -86,31 +86,6 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
 
     public function testCriteria()
     {
-        $expr = new ExpressionBuilder();
 
-        $query = Criteria::create();
-        $query->andWhere(
-            $expr->query(
-                $expr->filtered(
-                    $expr->andX(
-                        $expr->eq('term', 'foo'),
-                        $expr->eq('term', 'foo')
-                    )
-                )
-            )
-        );
-
-        $query->andWhere(
-            $expr->query(
-                $expr->filtered(
-                    $expr->andX(
-                        $expr->eq('term', 'foo'),
-                        $expr->eq('term', 'foo')
-                    )
-                )
-            )
-        );
-
-        $this->service->match($query);
     }
 }
