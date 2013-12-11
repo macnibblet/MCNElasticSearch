@@ -60,6 +60,6 @@ class ImmediateFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new Immediate($serviceLocator->get(Client::class));
+        return new Immediate($serviceLocator->getServiceLocator()->get(Client::class));
     }
 }
