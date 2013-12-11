@@ -119,6 +119,6 @@ final class DocumentEntity implements ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        throw new Exception\ReadOnlyException();
+        unset($this->{$offset});
     }
 }
