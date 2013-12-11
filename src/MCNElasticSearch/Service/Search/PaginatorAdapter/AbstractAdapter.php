@@ -40,8 +40,7 @@
 
 namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
-use Elasticsearch\Query;
-use Elasticsearch\SearchableInterface;
+use Elasticsearch\Client;
 use Zend\Paginator\Adapter\AdapterInterface;
 
 /**
@@ -50,14 +49,14 @@ use Zend\Paginator\Adapter\AdapterInterface;
 abstract class AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var \Elasticsearch\Query
+     * @var string
      */
     protected $query;
 
     /**
-     * @var \Elasticsearch\SearchableInterface
+     * @var \Elasticsearch\Client
      */
-    protected $searchable;
+    protected $client;
 
     /**
      * @var int
@@ -65,20 +64,19 @@ abstract class AbstractAdapter implements AdapterInterface
     protected $count;
 
     /**
-     * @param SearchableInterface $searchable
+     * @param Client $client
      */
-    public function setSearchable(SearchableInterface $searchable)
+    public function setClient(Client $client)
     {
-        $this->searchable = $searchable;
+        $this->client = $client;
     }
 
     /**
-     * @param Query $query
+     * @param string $query
      */
-    public function setQuery(Query $query)
+    public function setQuery($query)
     {
-        $this->query = clone $query;
-        $this->count = null;
+        $this->query = $query;
     }
 
     /**
@@ -87,7 +85,7 @@ abstract class AbstractAdapter implements AdapterInterface
     public function count()
     {
         if ($this->count === null) {
-            $this->count = $this->searchable->count($this->query);
+            $this->count = $this->client->count($this->query)['count'];
         }
 
         return $this->count;

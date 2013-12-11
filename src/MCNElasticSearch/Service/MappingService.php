@@ -106,6 +106,7 @@ class MappingService implements MappingServiceInterface
         foreach ($list as $metadata) {
 
             try {
+
                 $mapping = [
                     'index' => $metadata->getIndex(),
                     'type'  => $metadata->getType(),

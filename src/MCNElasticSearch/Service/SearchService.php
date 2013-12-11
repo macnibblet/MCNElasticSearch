@@ -81,19 +81,18 @@ class SearchService implements SearchServiceInterface
     }
 
     /**
-     * Perform a search
-     *
      * @param string $objectClassName
-     * @param Query  $query
+     * @param string $query
      * @param string $hydration
      * @param array  $options
      *
      * @throws Exception\InvalidArgumentException
+     *
      * @return \Zend\Paginator\Paginator
      */
-    public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW, array $options = [])
+    public function search($objectClassName, $query, $hydration = self::HYDRATE_RAW, array $options = [])
     {
-        $metadata = $this->metadata->getObjectMetadata($objectClassName);
+        $metadata = $this->metadata->getMetadata($objectClassName);
 
         switch ($hydration) {
             case static::HYDRATE_DOCTRINE_OBJECT:
@@ -112,12 +111,14 @@ class SearchService implements SearchServiceInterface
                 throw new Exception\InvalidArgumentException(sprintf('Unknown hydration mode %s', $hydration));
         }
 
-        $type = $this->client->getIndex($metadata->getIndex())
-                             ->getType($metadata->getType());
+        $params = [
+            'index' => $metadata->getIndex(),
+            'type'  => $metadata->getType(),
+            'body'  => $query
+        ];
 
-        $adapter->setQuery($query);
-        $adapter->setSearchable($type);
-
+        $adapter->setQuery($params);
+        $adapter->setClient($this->client);
         return new Paginator($adapter);
     }
 }

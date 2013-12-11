@@ -54,11 +54,14 @@ interface SearchServiceInterface extends EventsCapableInterface
     /**
      * Perform a search
      *
-     * @param string          $objectClassName
-     * @param \Elasticsearch\Query $query
-     * @param string          $hydration
+     * @param string $objectClassName
+     * @param string $query
+     * @param string $hydration
+     * @param array  $options
+     *
+     * @throws Exception\InvalidArgumentException
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW);
+    public function search($objectClassName, $query, $hydration = self::HYDRATE_RAW, array $options = []);
 }
