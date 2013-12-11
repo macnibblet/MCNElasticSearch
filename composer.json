@@ -19,13 +19,15 @@
     "require": {
         "php": ">=5.5",
         "ruflin/elastica": "0.90.2.0",
-        "zendframework/zendframework": "~2.2",
-        "doctrine/orm": "2.4.*"
+        "zendframework/zendframework": "~2.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~3.7",
         "squizlabs/php_codesniffer": "dev-master",
-        "satooshi/php-coveralls": "~0.6"
+        "satooshi/php-coveralls": "~0.6",
+
+        "doctrine/orm": "2.4.*",
+        "doctrine/mongodb-odm": "dev-master"
     },
     "autoload": {
         "psr-0": {
@@ -34,5 +36,9 @@
         "classmap": [
             "./Module.php"
         ]
+    },
+
+    "provide": {
+        "ext-mongo": "1.2.15"
     }
 }

@@ -40,17 +40,15 @@
 
 namespace MCNElasticSearch\Listener;
 
-use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use MCNElasticSearch\Service\DocumentServiceInterface;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 
 /**
- * Class AbstractDoctrineORMSynchronizer
+ * Class AbstractMongodbODMSynchronizer
  *
- * Provides a very simple API to help synchronize objects between the ORM and ElasticSearch.
+ * Provides a very simple API to help synchronize documents between MongoDB and ElasticSearch.
  */
-abstract class AbstractDoctrineORMSynchronizer extends AbstractSynchronizer
+abstract class AbstractMongodbODMSynchronizer extends AbstractSynchronizer
 {
     /**
      * Returns an array of events this subscriber wants to listen to.
@@ -71,7 +69,7 @@ abstract class AbstractDoctrineORMSynchronizer extends AbstractSynchronizer
      */
     public function postUpdate(LifecycleEventArgs $event)
     {
-        $entity = $event->getEntity();
+        $entity = $event->getDocument();
         if ($this->isValid($entity)) {
             $this->service->update($entity);
         }
@@ -82,7 +80,7 @@ abstract class AbstractDoctrineORMSynchronizer extends AbstractSynchronizer
      */
     public function postPersist(LifecycleEventArgs $event)
     {
-        $entity = $event->getEntity();
+        $entity = $event->getDocument();
         if ($this->isValid($entity)) {
             $this->service->add($entity);
         }
@@ -93,7 +91,7 @@ abstract class AbstractDoctrineORMSynchronizer extends AbstractSynchronizer
      */
     public function postRemove(LifecycleEventArgs $event)
     {
-        $entity = $event->getEntity();
+        $entity = $event->getDocument();
         if ($this->isValid($entity)) {
             $this->service->delete($entity);
         }
