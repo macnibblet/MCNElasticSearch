@@ -91,7 +91,11 @@ class MappingService implements MappingServiceInterface
             });
         }
 
-        $indexes = array_map(function (MetadataOptions $metadata) { return $metadata->getIndex(); }, $list);
+        $extract = function (MetadataOptions $metadata) {
+            return $metadata->getIndex();
+        };
+
+        $indexes = array_map($extract, $list);
         $indexes = array_unique($indexes);
 
         array_walk($indexes, function ($index) {
