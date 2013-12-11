@@ -21,9 +21,9 @@ interface LoaderStrategyInterface
      *
      * @param array            $items
      * @param ObjectRepository $repository
-     * @param MetadataOptions  $objectMetadata
+     * @param MetadataOptions  $metadata
      *
      * @return Collection
      */
-    public function load(array $items, ObjectRepository $repository, MetadataOptions $objectMetadata);
+    public function load(array $items, ObjectRepository $repository, MetadataOptions $metadata);
 }

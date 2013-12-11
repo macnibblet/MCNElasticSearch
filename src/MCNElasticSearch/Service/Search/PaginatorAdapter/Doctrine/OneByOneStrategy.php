@@ -22,17 +22,17 @@ class OneByOneStrategy implements LoaderStrategyInterface
      *
      * @param array            $items
      * @param ObjectRepository $repository
-     * @param MetadataOptions  $objectMetadata
+     * @param MetadataOptions  $metadata
      *
      * @return Collection
      */
-    public function load(array $items, ObjectRepository $repository, MetadataOptions $objectMetadata)
+    public function load(array $items, ObjectRepository $repository, MetadataOptions $metadata)
     {
         $collection = new ArrayCollection();
 
         foreach ($items as $item) {
 
-            $result = $repository->findOneBy([$objectMetadata->getId() => $item]);
+            $result = $repository->findOneBy([$metadata->getId() => $item]);
 
             // not doing this could cause some strange issues!
             if ($result) {

@@ -127,7 +127,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
 
             $this->metadataService
                 ->expects($this->any())
-                ->method('getObjectMetadata')
+                ->method('getMetadata')
                 ->will($this->throwException(new $exception()));
 
         } else {
@@ -142,7 +142,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
 
             $this->metadataService
                 ->expects($this->once())
-                ->method('getObjectMetadata')
+                ->method('getMetadata')
                 ->with(get_class($object))
                 ->will($this->returnValue($metadata));
 

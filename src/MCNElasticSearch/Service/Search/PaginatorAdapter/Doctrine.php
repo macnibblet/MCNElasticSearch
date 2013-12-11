@@ -58,7 +58,7 @@ class Doctrine extends AbstractAdapter
     /**
      * @var \MCNElasticSearch\Options\MetadataOptions
      */
-    protected $objectMetadata;
+    protected $metadata;
 
     /**
      * @var DoctrineOptions
@@ -67,14 +67,14 @@ class Doctrine extends AbstractAdapter
 
     /**
      * @param \Doctrine\Common\Persistence\ObjectRepository   $repository
-     * @param \MCNElasticSearch\Options\MetadataOptions       $objectMetadata
+     * @param \MCNElasticSearch\Options\MetadataOptions       $metadata
      * @param DoctrineOptions                                 $options
      */
-    public function __construct(ObjectRepository $repository, MetadataOptions $objectMetadata, Options $options)
+    public function __construct(ObjectRepository $repository, MetadataOptions $metadata, Options $options)
     {
-        $this->options        = $options;
-        $this->repository     = $repository;
-        $this->objectMetadata = $objectMetadata;
+        $this->options    = $options;
+        $this->metadata   = $metadata;
+        $this->repository = $repository;
     }
 
     /**
@@ -143,7 +143,7 @@ class Doctrine extends AbstractAdapter
     {
         $className = $this->options->getStrategy();
 
-        return (new $className)->load($items, $this->repository, $this->objectMetadata);
+        return (new $className)->load($items, $this->repository, $this->metadata);
     }
 
     /**
@@ -164,7 +164,7 @@ class Doctrine extends AbstractAdapter
 
         foreach ($items as $item) {
 
-            $method = 'get' . $this->objectMetadata->getId();
+            $method = 'get' . $this->metadata->getId();
             $id = $item->{$method}();
 
             if (! empty($meta[$id])) {

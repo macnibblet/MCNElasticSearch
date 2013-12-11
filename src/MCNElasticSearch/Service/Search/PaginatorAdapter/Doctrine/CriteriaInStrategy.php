@@ -24,13 +24,13 @@ class CriteriaInStrategy implements LoaderStrategyInterface
      *
      * @param array            $items
      * @param ObjectRepository $repository
-     * @param MetadataOptions  $objectMetadata
+     * @param MetadataOptions  $metadata
      *
      * @throws \MCNElasticSearch\Service\Exception\InvalidArgumentException If an invalid repository has been specified.
      *
      * @return Collection
      */
-    public function load(array $items, ObjectRepository $repository, MetadataOptions $objectMetadata)
+    public function load(array $items, ObjectRepository $repository, MetadataOptions $metadata)
     {
         if (! $repository instanceof Selectable) {
             throw new Exception\InvalidArgumentException(
@@ -40,7 +40,7 @@ class CriteriaInStrategy implements LoaderStrategyInterface
 
         $criteria = Criteria::create();
         $criteria->where(
-            $criteria->expr()->in($objectMetadata->getId(), $items)
+            $criteria->expr()->in($metadata->getId(), $items)
         );
 
         return $repository->matching($criteria);
