@@ -66,7 +66,7 @@ class MappingService implements MappingServiceInterface
 
     /**
      * @param \Elasticsearch\Client $client
-     * @param MetadataService  $metadata
+     * @param MetadataService       $metadata
      */
     public function __construct(Client $client, MetadataService $metadata)
     {
@@ -98,9 +98,6 @@ class MappingService implements MappingServiceInterface
 
         /** @var $options \MCNElasticSearch\Options\TypeMappingOptions */
         foreach ($mappings as $options) {
-
-            $type = $this->client->getIndex($options->getIndex())
-                                 ->getType($options->getName());
 
             // this is only the basic mapping *required*
             $mapping = new Mapping($type);

@@ -40,7 +40,6 @@
 
 namespace MCNElasticSearch\Service;
 
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
 use Elasticsearch\Client;
 use Elasticsearch\Query;
