@@ -42,8 +42,32 @@
 namespace MCNElasticSearch\ServiceFactory\Exception;
 
 /**
- * Class MissingConfigurationException
+ * Class ConfigurationException
  */
-class MissingConfigurationException extends \LogicException implements ExceptionInterface
+class ConfigurationException extends \LogicException implements ExceptionInterface
 {
+    /**
+     * A configuration key could not be found
+     *
+     * @param string $key
+     *
+     * @return ConfigurationException
+     */
+    public static function missingConfiguration($key)
+    {
+        return new static(sprintf('Could not find the configuration "%s" in MCNElasticSearch', $key));
+    }
+
+    /**
+     * An invalid configuration was specified
+     *
+     * @param string $key
+     * @param string $reason
+     *
+     * @return ConfigurationException
+     */
+    public static function invalidConfiguration($key, $reason = '')
+    {
+        return new static(sprintf('Invalid configuration for %s %s', $key, $reason));
+    }
 }

@@ -12,7 +12,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
 use MCNElasticSearch\Service\Exception;
-use MCNElasticSearch\Options\ObjectMetadataOptions;
+use MCNElasticSearch\Options\MetadataOptions;
 
 /**
  * Class CriteriaInStrategy
@@ -24,13 +24,13 @@ class CriteriaInStrategy implements LoaderStrategyInterface
      *
      * @param array                 $items
      * @param ObjectRepository      $repository
-     * @param ObjectMetadataOptions $objectMetadata
+     * @param MetadataOptions $objectMetadata
      *
      * @throws \MCNElasticSearch\Service\Exception\InvalidArgumentException If an invalid repository has been specified.
      *
      * @return Collection
      */
-    public function load(array $items, ObjectRepository $repository, ObjectMetadataOptions $objectMetadata)
+    public function load(array $items, ObjectRepository $repository, MetadataOptions $objectMetadata)
     {
         if (! $repository instanceof Selectable) {
             throw new Exception\InvalidArgumentException(

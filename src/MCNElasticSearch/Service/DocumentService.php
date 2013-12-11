@@ -40,7 +40,7 @@
 
 namespace MCNElasticSearch\Service;
 
-use MCNElasticSearch\Options\ObjectMetadataOptions;
+use MCNElasticSearch\Options\MetadataOptions;
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Stdlib\Hydrator\HydratorPluginManager;
@@ -90,7 +90,7 @@ class DocumentService implements DocumentServiceInterface
      * @throws Exception\InvalidArgumentException
      * @throws Exception\ObjectMetadataMissingException
      *
-     * @return \MCNElasticSearch\Options\ObjectMetadataOptions
+     * @return \MCNElasticSearch\Options\MetadataOptions
      */
     protected function getMetadata($object)
     {
@@ -99,18 +99,18 @@ class DocumentService implements DocumentServiceInterface
         }
 
         /** @var \Zend\Stdlib\Hydrator\AbstractHydrator $hydrator */
-        return $this->metadata->getObjectMetadata(get_class($object));
+        return $this->metadata->getMetadata(get_class($object));
     }
 
     /**
      * Convert a object to a simple document
      *
      * @param mixed                 $object
-     * @param ObjectMetadataOptions $metadata
+     * @param MetadataOptions $metadata
      *
      * @return Document\DocumentEntity
      */
-    protected function createDocument($object, ObjectMetadataOptions $metadata)
+    protected function createDocument($object, MetadataOptions $metadata)
     {
         $hydrator = $this->hydratorManager->get($metadata->getHydrator());
 

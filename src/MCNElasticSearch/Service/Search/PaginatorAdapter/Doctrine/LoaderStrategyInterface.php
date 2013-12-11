@@ -9,7 +9,7 @@ namespace MCNElasticSearch\Service\Search\PaginatorAdapter\Doctrine;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectRepository;
-use MCNElasticSearch\Options\ObjectMetadataOptions;
+use MCNElasticSearch\Options\MetadataOptions;
 
 /**
  * Interface LoaderStrategyInterface
@@ -21,9 +21,9 @@ interface LoaderStrategyInterface
      *
      * @param array                 $items
      * @param ObjectRepository      $repository
-     * @param ObjectMetadataOptions $objectMetadata
+     * @param MetadataOptions $objectMetadata
      *
      * @return Collection
      */
-    public function load(array $items, ObjectRepository $repository, ObjectMetadataOptions $objectMetadata);
+    public function load(array $items, ObjectRepository $repository, MetadataOptions $objectMetadata);
 }

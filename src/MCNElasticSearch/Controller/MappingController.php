@@ -101,18 +101,20 @@ class MappingController extends AbstractActionController
     public function progress(Event $event)
     {
         /**
-         * @var $options  \MCNElasticSearch\Options\TypeMappingOptions
-         * @var $response \Elasticsearch\Response
+         * @var $response array
+         * @var $metadata \MCNElasticSearch\Options\MetadataOptions
          */
-        $options  = $event->getParam('options');
         $response = $event->getParam('response');
+        $metadata = $event->getParam('metadata');
 
-        if ($response->isOk()) {
+        if (isset($response['ok']) && $response['ok']) {
             $this->console->write('[Success] ', ColorInterface::GREEN);
-            $this->console->writeLine($options->getName());
+            $this->console->writeLine($metadata->getType());
         } else {
             $this->console->write('[Error] ', ColorInterface::RED);
-            $this->console->writeLine(sprintf('%s: %s', $options->getName(), $response->getError()));
+            $this->console->writeLine(sprintf('%s: %s', $metadata->getType(), $response['error']));
+            $this->console->write(json_encode($event->getParam('mapping'), JSON_PRETTY_PRINT));
+            $this->console->writeLine();
         }
     }
 

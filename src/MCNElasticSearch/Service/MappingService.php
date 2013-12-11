@@ -41,10 +41,8 @@
 namespace MCNElasticSearch\Service;
 
 use Elasticsearch\Client;
-use Elasticsearch\Exception\ResponseException;
-use Elasticsearch\Type\Mapping;
-use Elasticsearch\Type;
-use MCNElasticSearch\Options\TypeMappingOptions;
+use Exception;
+use MCNElasticSearch\Options\MetadataOptions;
 use Zend\EventManager\EventManagerAwareTrait;
 
 /**
@@ -85,32 +83,46 @@ class MappingService implements MappingServiceInterface
      */
     public function create(array $types = [])
     {
-        $mappings = $this->metadata->getAllTypeMappings();
+        $list = $this->metadata->getAllMetadata();
 
         if (! empty($types)) {
-            array_filter(
-                $mappings,
-                function (TypeMappingOptions $t) use ($types) {
-                    return in_array($t->getName(), $types);
-                }
-            );
+            array_filter($list, function (MetadataOptions $t) use ($types) {
+                return in_array($t->getType(), $types);
+            });
         }
 
-        /** @var $options \MCNElasticSearch\Options\TypeMappingOptions */
-        foreach ($mappings as $options) {
+        $indexes = array_map(function(MetadataOptions $metadata) { return $metadata->getIndex(); }, $list);
+        $indexes = array_unique($indexes);
 
-            // this is only the basic mapping *required*
-            $mapping = new Mapping($type);
-            $mapping->setSource($options->getSource());
-            $mapping->setProperties($options->getProperties());
+        array_walk($indexes, function($index) {
+            $this->client->indices()->create(['index' => $index]);
+        });
+
+        /** @var $metadata \MCNElasticSearch\Options\MetadataOptions */
+        foreach ($list as $metadata) {
 
             try {
-                $response = $mapping->send();
-            } catch (ResponseException $exception) {
-                $response = $exception->getResponse();
+                $mapping = [
+                    'index' => $metadata->getIndex(),
+                    'type'  => $metadata->getType(),
+                    'body'  => [
+                        $metadata->getType() => $metadata->getMapping()
+                    ]
+                ];
+
+                $response = $this->client->indices()->putMapping($mapping);
+
+            } catch (Exception $exception) {
+
+                $response = [
+                    'ok'    => false,
+                    'error' => $exception->getMessage()
+                ];
+
             } finally {
+
                 $this->getEventManager()
-                     ->trigger('create', $this, compact('mapping', 'response', 'options'));
+                     ->trigger('create', $this, compact('mapping', 'response', 'metadata'));
             }
         }
     }
@@ -126,28 +138,37 @@ class MappingService implements MappingServiceInterface
      */
     public function delete(array $types = [])
     {
-        $mappings = $this->metadata->getAllTypeMappings();
+        $list = $this->metadata->getAllMetadata();
 
         if (! empty($types)) {
-            array_filter(
-                $mappings,
-                function (TypeMappingOptions $t) use ($types) {
-                    return in_array($t->getName(), $types);
-                }
-            );
+            array_filter($list, function (MetadataOptions $t) use ($types) {
+                return in_array($t->getType(), $types);
+            });
         }
 
-        foreach ($mappings as $options) {
+        /** @var $metadata \MCNElasticSearch\Options\MetadataOptions */
+        foreach ($list as $metadata) {
 
-            $type = $this->client->getIndex($options->getIndex())
-                                 ->getType($options->getName());
             try {
-                $response = $type->delete();
-            } catch (ResponseException $exception) {
-                $response = $exception->getResponse();
+
+                $params = [
+                    'index' => $metadata->getIndex(),
+                    'type'  => $metadata->getType()
+                ];
+
+                $response = $this->client->indices()->deleteMapping($params);
+
+            } catch (Exception $exception) {
+
+                $response = [
+                    'ok'    => false,
+                    'error' => $exception->getMessage()
+                ];
+
             } finally {
+
                 $this->getEventManager()
-                     ->trigger('delete', $this, compact('type', 'response', 'options'));
+                    ->trigger('delete', $this, compact('response', 'metadata'));
             }
         }
     }

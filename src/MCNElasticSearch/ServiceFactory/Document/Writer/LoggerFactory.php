@@ -44,7 +44,7 @@ namespace MCNElasticSearch\ServiceFactory\Document\Writer;
 use MCNElasticSearch\Service\Document\Writer\Logger;
 use MCNElasticSearch\Service\Document\Writer\LoggerOptions;
 use MCNElasticSearch\ServiceFactory\Exception\DomainException;
-use MCNElasticSearch\ServiceFactory\Exception\MissingConfigurationException;
+use MCNElasticSearch\ServiceFactory\Exception\ConfigurationException;
 use Psr\Log\LoggerInterface;
 use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -62,8 +62,8 @@ class LoggerFactory implements DelegatorFactoryInterface
      * @param string                  $requestedName  the requested service name
      * @param callable                $callback       the callback that is responsible for creating the service
      *
-     * @throws DomainException               If the logger does not implement the psr-3 interface
-     * @throws MissingConfigurationException If the configuration cannot be found
+     * @throws DomainException        If the logger does not implement the psr-3 interface
+     * @throws ConfigurationException If the configuration cannot be found
      *
      * @return \MCNElasticSearch\Service\Document\Writer\WriterInterface
      */
@@ -71,9 +71,7 @@ class LoggerFactory implements DelegatorFactoryInterface
     {
         $config = $serviceLocator->get('Config');
         if (! isset($config['MCNElasticSearch']['logging'])) {
-            throw new MissingConfigurationException(
-                'Could not found the configuration key "logging" in MCNElasticSearch'
-            );
+            throw ConfigurationException::missingConfiguration('logging');
         }
 
         $loggerConfig = $config['MCNElasticSearch']['logging'];

@@ -84,16 +84,8 @@ return [
          */
         'metadata' => [
 
-            /**
-             * List of object mappings
-             */
-            'objects' => [],
-
-            /**
-             * List of types E.g "SQL Tables"
-             */
-            'types' => []
         ],
+
         /**
          * Plugin manager for the different writers available
          */
@@ -103,13 +95,13 @@ return [
             ],
 
             'factories' => [
-                Immediate::class => ImmediateFactory::class,
-                Logger::class    => LoggerFactory::class
+                Logger::class    => LoggerFactory::class,
+                Immediate::class => ImmediateFactory::class
             ]
         ],
 
         DocumentService::class => [
-            'listeners' => [],
+            'listeners' => []
         ],
 
         SearchService::class => [

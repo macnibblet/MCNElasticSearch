@@ -44,7 +44,7 @@ use ArrayObject;
 use Elastica\Document;
 use Elastica\Response;
 use Elastica\Client;
-use MCNElasticSearch\Options\ObjectMetadataOptions;
+use MCNElasticSearch\Options\MetadataOptions;
 use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
@@ -132,7 +132,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
 
         } else {
 
-            $metadata = new ObjectMetadataOptions();
+            $metadata = new MetadataOptions();
             $metadata->setFromArray(
                 [
                     'index' => 'hello',

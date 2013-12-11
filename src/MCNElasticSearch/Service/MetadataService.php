@@ -40,8 +40,7 @@
 
 namespace MCNElasticSearch\Service;
 
-use MCNElasticSearch\Options\ObjectMetadataOptions;
-use MCNElasticSearch\Options\TypeMappingOptions;
+use MCNElasticSearch\Options\MetadataOptions;
 
 /**
  * Class MetadataService
@@ -49,47 +48,31 @@ use MCNElasticSearch\Options\TypeMappingOptions;
 class MetadataService implements MetadataServiceInterface
 {
     /**
-     * @var \MCNElasticSearch\Options\TypeMappingOptions[]
+     * @var array
      */
-    protected $typeMapping = [];
+    protected $metadata = [];
 
     /**
-     * @var \MCNElasticSearch\Options\ObjectMetadataOptions[]
+     * Add a metadata object
+     *
+     * @param string                $className
+     * @param array|MetadataOptions $metadata
+     *
+     * @throws Exception\InvalidArgumentException
      */
-    protected $objectMetadata = [];
-
-    /**
-     * @param array $configuration
-     */
-    public function __construct(array $configuration = [])
+    public function addMetadata($className, $metadata)
     {
-        $this->setConfiguration($configuration);
-    }
-
-    /**
-     * @param array $configuration
-     */
-    public function setConfiguration(array $configuration)
-    {
-        if (isset($configuration['objects'])) {
-
-            // reset
-            $this->objectMetadata = [];
-            foreach ($configuration['objects'] as $className => $config) {
-                $this->objectMetadata[$className] = new ObjectMetadataOptions($config);
-                $this->objectMetadata[$className]->setObjectClassName($className);
-            }
+        if (is_array($metadata)) {
+            $metadata = new MetadataOptions($metadata);
         }
 
-        if (isset($configuration['types'])) {
-
-            // reset
-            $this->typeMapping = [];
-            foreach ($configuration['types'] as $typeName => $config) {
-                $this->typeMapping[$typeName] = new TypeMappingOptions($config);
-                $this->typeMapping[$typeName]->setName($typeName);
-            }
+        if (! $metadata instanceof MetadataOptions) {
+            throw new Exception\InvalidArgumentException(
+                sprintf('First argument expected to be an array of instance of %s', MetadataOptions::class)
+            );
         }
+
+        $this->metadata[$className] = $metadata;
     }
 
     /**
@@ -97,38 +80,22 @@ class MetadataService implements MetadataServiceInterface
      *
      * @throws Exception\ObjectMetadataMissingException
      *
-     * @return \MCNElasticSearch\Options\ObjectMetadataOptions
+     * @return \MCNElasticSearch\Options\MetadataOptions
      */
-    public function getObjectMetadata($className)
+    public function getMetadata($className)
     {
-        if (isset($this->objectMetadata[$className])) {
-            return $this->objectMetadata[$className];
+        if (isset($this->metadata[$className])) {
+            return $this->metadata[$className];
         }
 
-        throw new Exception\ObjectMetadataMissingException($className);
+        throw new Exception\ObjectMetadataMissingException;
     }
 
     /**
-     * @param string $type
-     *
-     * @throws Exception\TypeMappingMissingException
-     *
-     * @return \MCNElasticSearch\Options\TypeMappingOptions
+     * @return \MCNElasticSearch\Options\MetadataOptions[]
      */
-    public function getTypeMapping($type)
+    public function getAllMetadata()
     {
-        if (isset($this->typeMapping[$type])) {
-            return $this->typeMapping[$type];
-        }
-
-        throw new Exception\TypeMappingMissingException($type);
-    }
-
-    /**
-     * @return \MCNElasticSearch\Options\TypeMappingOptions[]
-     */
-    public function getAllTypeMappings()
-    {
-        return $this->typeMapping;
+        return $this->metadata;
     }
 }

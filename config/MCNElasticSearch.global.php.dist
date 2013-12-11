@@ -58,15 +58,38 @@ return [
          */
         'metadata' => [
 
-            /**
-             * List of object mappings
-             */
-            'objects' => [],
+            'Foo\Entity\BarEntity' => [
+                'hydrator' => 'Foo\Hydrator\BarHydrator,
+                'type'     => 'companies',
+                'index'    => 'lokalbygg',
 
-            /**
-             * List of types E.g "SQL Tables"
-             */
-            'types' => []
+                'mapping' => [
+                    '_source' => [
+                        'enabled' => true
+                    ],
+
+                    'properties' => [
+
+                        'id'      => ['type' => 'integer'],
+                        'name'    => ['type' => 'string'],
+                        'address' => [
+
+                            'type'       => 'nested',
+                            'properties' => [
+
+                                'id'   => ['type' => 'integer'],
+                                'type' => ['type' => 'string', 'not_analyzed' => true],
+
+                                'firstAddress'  => ['type' => 'string'],
+                                'secondAddress' => ['type' => 'string'],
+                                'zipcode'       => ['type' => 'integer'],
+                                'country'       => ['type' => 'string'],
+                                'coordinates'   => ['type' => 'geo_point'],
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ],
 
         /**

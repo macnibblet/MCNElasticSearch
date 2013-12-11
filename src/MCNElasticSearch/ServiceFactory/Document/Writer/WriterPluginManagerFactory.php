@@ -42,7 +42,7 @@
 namespace MCNElasticSearch\ServiceFactory\Document\Writer;
 
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
-use MCNElasticSearch\ServiceFactory\Exception\MissingConfigurationException;
+use MCNElasticSearch\ServiceFactory\Exception\ConfigurationException;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -57,7 +57,7 @@ class WriterPluginManagerFactory implements FactoryInterface
      *
      * @param ServiceLocatorInterface $serviceLocator
      *
-     * @throws \MCNElasticSearch\ServiceFactory\Exception\MissingConfigurationException
+     * @throws \MCNElasticSearch\ServiceFactory\Exception\ConfigurationException
      *
      * @return \MCNElasticSearch\Service\Document\Writer\WriterPluginManager
      */
@@ -66,7 +66,7 @@ class WriterPluginManagerFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
 
         if (! isset($config['MCNElasticSearch']['writer_manager'])) {
-            throw new MissingConfigurationException(
+            throw new ConfigurationException(
                 'Could not found the configuration key "writer_manager" in MCNElasticSearch'
             );
         }

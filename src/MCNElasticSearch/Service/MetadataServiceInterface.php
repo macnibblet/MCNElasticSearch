@@ -50,21 +50,12 @@ interface MetadataServiceInterface
      *
      * @throws Exception\ObjectMetadataMissingException
      *
-     * @return \MCNElasticSearch\Options\ObjectMetadataOptions
+     * @return \MCNElasticSearch\Options\MetadataOptions
      */
-    public function getObjectMetadata($className);
+    public function getMetadata($className);
 
     /**
-     * @param string $type
-     *
-     * @throws Exception\TypeMappingMissingException
-     *
-     * @return \MCNElasticSearch\Options\TypeMappingOptions
+     * @return \MCNElasticSearch\Options\MetadataOptions[]
      */
-    public function getTypeMapping($type);
-
-    /**
-     * @return \MCNElasticSearch\Options\TypeMappingOptions[]
-     */
-    public function getAllTypeMappings();
+    public function getAllMetadata();
 }

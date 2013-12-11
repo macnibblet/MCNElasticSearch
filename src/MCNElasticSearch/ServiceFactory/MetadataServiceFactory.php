@@ -55,10 +55,24 @@ class MetadataServiceFactory implements FactoryInterface
      *
      * @param ServiceLocatorInterface $sl
      *
-     * @return \Elasticsearch\Client
+     * @throws Exception\ConfigurationException
+     *
+     * @return \MCNElasticSearch\Service\MetadataService
      */
     public function createService(ServiceLocatorInterface $sl)
     {
-        return new MetadataService($sl->get('Config')['MCNElasticSearch']['metadata']);
+        $config = $sl->get('Config');
+        if (! isset($config['MCNElasticSearch']['metadata'])) {
+            throw Exception\ConfigurationException::missingConfiguration('metadata');
+        }
+
+        $config  = $config['MCNElasticSearch']['metadata'];
+        $service = new MetadataService();
+
+        foreach ($config as $className => $metadata) {
+            $service->addMetadata($className, $metadata);
+        }
+
+        return $service;
     }
 }

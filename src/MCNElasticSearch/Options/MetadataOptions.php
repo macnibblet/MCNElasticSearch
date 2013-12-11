@@ -44,9 +44,9 @@ use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
 use Zend\Stdlib\AbstractOptions;
 
 /**
- * Class ObjectMetadataOptions
+ * Class MetadataOptions
  */
-class ObjectMetadataOptions extends AbstractOptions
+class MetadataOptions extends AbstractOptions
 {
     /**
      * Property to use as the document id
@@ -84,11 +84,9 @@ class ObjectMetadataOptions extends AbstractOptions
     protected $writer = Immediate::class;
 
     /**
-     * FQCN of the object class name
-     *
-     * @var string|null
+     * @var array
      */
-    protected $objectClassName;
+    protected $mapping;
 
     /**
      * @param string $hydrator
@@ -120,28 +118,6 @@ class ObjectMetadataOptions extends AbstractOptions
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @param string $objectClassName
-     *
-     * @throws Exception\InvalidArgumentException If the given class name cannot be found
-     */
-    public function setObjectClassName($objectClassName)
-    {
-        if (! class_exists($objectClassName)) {
-            throw new Exception\InvalidArgumentException(sprintf('Class %s could not be found', $objectClassName));
-        }
-
-        $this->objectClassName = $objectClassName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getObjectClassName()
-    {
-        return $this->objectClassName;
     }
 
     /**
@@ -190,5 +166,21 @@ class ObjectMetadataOptions extends AbstractOptions
     public function getWriter()
     {
         return $this->writer;
+    }
+
+    /**
+     * @param array $mapping
+     */
+    public function setMapping(array $mapping)
+    {
+        $this->mapping = $mapping;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
     }
 }
