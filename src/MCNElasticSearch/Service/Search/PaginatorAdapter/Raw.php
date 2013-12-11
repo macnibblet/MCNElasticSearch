@@ -54,9 +54,9 @@ class Raw extends AbstractAdapter
      */
     public function getItems($offset, $itemCountPerPage)
     {
-        $this->query->setFrom($offset);
-        $this->query->setSize($itemCountPerPage);
+        $this->query['from'] = $offset;
+        $this->query['size'] = $itemCountPerPage;
 
-        return $this->client->search($this->query)->getResults();
+        return $this->client->search($this->query);
     }
 }

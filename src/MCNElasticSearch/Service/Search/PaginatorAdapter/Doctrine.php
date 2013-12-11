@@ -91,13 +91,13 @@ class Doctrine extends AbstractAdapter
             return [];
         }
 
-        $this->query['from'] = $offset;
-        $this->query['size'] = $itemCountPerPage;
-
         // Query elastic search
         $response = $this->client->search($this->query);
 
         $meta  = $this->extractMetaInformation($response);
+
+        var_dump($meta);
+
         $items = $this->load(array_keys($meta));
 
         return $this->merge($meta, $items);
@@ -109,24 +109,25 @@ class Doctrine extends AbstractAdapter
      * When doing queries against elastic search one can aggregate meta information and this is where we extract it
      * from each result.
      *
-     * @param \Elasticsearch\ResultSet $results
+     * @param array $results
      *
      * @return array
      */
-    private function extractMetaInformation(ResultSet $results)
+    private function extractMetaInformation(array $results)
     {
         $dataSet = [];
 
-        /** @var $result \Elasticsearch\Result */
-        foreach ($results as $result) {
+        foreach ($results['hits']['hits'] as $hit) {
+
             $data = [];
-            foreach ($result->getHit() as $key => $value) {
+            foreach ($hit as $key => $value) {
+
                 if (substr($key, 0, 1) != '_') {
                     $data[$key] = $value;
                 }
             }
 
-            $dataSet[$result->getId()] = $data;
+            $dataSet[$hit['_id']] = $data;
         }
 
         return $dataSet;
