@@ -91,10 +91,10 @@ class MappingService implements MappingServiceInterface
             });
         }
 
-        $indexes = array_map(function(MetadataOptions $metadata) { return $metadata->getIndex(); }, $list);
+        $indexes = array_map(function (MetadataOptions $metadata) { return $metadata->getIndex(); }, $list);
         $indexes = array_unique($indexes);
 
-        array_walk($indexes, function($index) {
+        array_walk($indexes, function ($index) {
             $this->client->indices()->create(['index' => $index]);
         });
 

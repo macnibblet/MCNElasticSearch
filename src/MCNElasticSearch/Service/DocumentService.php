@@ -105,7 +105,7 @@ class DocumentService implements DocumentServiceInterface
     /**
      * Convert a object to a simple document
      *
-     * @param mixed                 $object
+     * @param mixed           $object
      * @param MetadataOptions $metadata
      *
      * @return Document\DocumentEntity
@@ -117,12 +117,7 @@ class DocumentService implements DocumentServiceInterface
         $data = $hydrator->extract($object);
         $id   = isset($data[$metadata->getIndex()]) ? $data[$metadata->getId()] : null;
 
-        return new Document\DocumentEntity(
-            $metadata->getIndex(),
-            $metadata->getType(),
-            $id,
-            $data
-        );
+        return new Document\DocumentEntity($metadata->getIndex(), $metadata->getType(), $id, $data);
     }
 
     /**

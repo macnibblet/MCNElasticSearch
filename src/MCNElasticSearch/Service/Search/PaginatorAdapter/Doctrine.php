@@ -42,8 +42,6 @@ namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Elasticsearch\Query;
-use Elasticsearch\ResultSet;
 use MCNElasticSearch\Options\MetadataOptions;
 use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions as Options;
 
@@ -53,7 +51,7 @@ use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions as Options;
 class Doctrine extends AbstractAdapter
 {
     /**
-     * @var \Doctrine\Common\Collections\ObjectRepository
+     * @var \Doctrine\Common\Persistence\ObjectRepository
      */
     protected $repository;
 
@@ -69,7 +67,7 @@ class Doctrine extends AbstractAdapter
 
     /**
      * @param \Doctrine\Common\Persistence\ObjectRepository   $repository
-     * @param \MCNElasticSearch\Options\MetadataOptions $objectMetadata
+     * @param \MCNElasticSearch\Options\MetadataOptions       $objectMetadata
      * @param DoctrineOptions                                 $options
      */
     public function __construct(ObjectRepository $repository, MetadataOptions $objectMetadata, Options $options)

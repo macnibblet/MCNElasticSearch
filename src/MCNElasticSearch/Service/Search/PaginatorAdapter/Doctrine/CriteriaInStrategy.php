@@ -22,9 +22,9 @@ class CriteriaInStrategy implements LoaderStrategyInterface
     /**
      * Load a bunch of items from the object repository
      *
-     * @param array                 $items
-     * @param ObjectRepository      $repository
-     * @param MetadataOptions $objectMetadata
+     * @param array            $items
+     * @param ObjectRepository $repository
+     * @param MetadataOptions  $objectMetadata
      *
      * @throws \MCNElasticSearch\Service\Exception\InvalidArgumentException If an invalid repository has been specified.
      *

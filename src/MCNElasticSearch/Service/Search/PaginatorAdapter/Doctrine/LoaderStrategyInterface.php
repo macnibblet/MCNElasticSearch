@@ -19,9 +19,9 @@ interface LoaderStrategyInterface
     /**
      * Load a bunch of items from the object repository
      *
-     * @param array                 $items
-     * @param ObjectRepository      $repository
-     * @param MetadataOptions $objectMetadata
+     * @param array            $items
+     * @param ObjectRepository $repository
+     * @param MetadataOptions  $objectMetadata
      *
      * @return Collection
      */

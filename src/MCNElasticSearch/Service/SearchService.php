@@ -69,7 +69,7 @@ class SearchService implements SearchServiceInterface
     protected $client;
 
     /**
-     * @param \Elasticsearch\Client         $client
+     * @param \Elasticsearch\Client    $client
      * @param MetadataServiceInterface $metadata
      * @param ObjectManager            $objectManager
      */

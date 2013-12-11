@@ -40,7 +40,6 @@
 
 namespace MCNElasticSearch\ServiceFactory;
 
-use Elasticsearch\Client;
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MetadataService;
