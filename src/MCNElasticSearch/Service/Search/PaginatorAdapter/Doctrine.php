@@ -91,6 +91,9 @@ class Doctrine extends AbstractAdapter
             return [];
         }
 
+        $this->query['from'] = $offset;
+        $this->query['size'] = $itemCountPerPage;
+
         // Query elastic search
         $response = $this->client->search($this->query);
 

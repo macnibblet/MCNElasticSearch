@@ -94,7 +94,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
 
     public function invalidObjectData()
     {
-        $object = new ArrayObject(['id' => 'test']);
+        $object = new ArrayObject();
 
         return [
             ['add', null,   Exception\InvalidArgumentException::class],
