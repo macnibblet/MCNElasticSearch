@@ -95,9 +95,6 @@ class Doctrine extends AbstractAdapter
         $response = $this->client->search($this->query);
 
         $meta  = $this->extractMetaInformation($response);
-
-        var_dump($meta);
-
         $items = $this->load(array_keys($meta));
 
         return $this->merge($meta, $items);
@@ -109,28 +106,30 @@ class Doctrine extends AbstractAdapter
      * When doing queries against elastic search one can aggregate meta information and this is where we extract it
      * from each result.
      *
-     * @param array $results
+     * @param array $response
      *
      * @return array
      */
-    private function extractMetaInformation(array $results)
+    private function extractMetaInformation(array $response)
     {
-        $dataSet = [];
-
-        foreach ($results['hits']['hits'] as $hit) {
-
-            $data = [];
-            foreach ($hit as $key => $value) {
-
-                if (substr($key, 0, 1) != '_') {
-                    $data[$key] = $value;
-                }
-            }
-
-            $dataSet[$hit['_id']] = $data;
+        if (isset($this->query['body']['sort'])) {
+            $sortingKeys = array_keys($this->query['body']['sort']);
         }
 
-        return $dataSet;
+        $result = [];
+        foreach ($response['hits']['hits'] as $hit) {
+
+            $result[$hit['_id']] = [];
+
+            if (isset($sortingKeys)) {
+                $result[$hit['_id']]['sort'] = [];
+                foreach ($hit['sort'] as $index => $value) {
+                    $result[$hit['_id']]['sort'][$sortingKeys[$index]] = $value;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**

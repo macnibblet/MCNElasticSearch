@@ -94,18 +94,18 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
 
     public function invalidObjectData()
     {
-        $object = new ArrayObject();
+        $object = new ArrayObject(['id' => 'test']);
 
         return [
-            ['add', 'foo',   Exception\InvalidArgumentException::class],
+            ['add', null,   Exception\InvalidArgumentException::class],
             ['add', $object, Exception\ObjectMetadataMissingException::class],
             ['add', $object, null],
 
-            ['update', 'foo',   Exception\InvalidArgumentException::class],
+            ['update', null,   Exception\InvalidArgumentException::class],
             ['update', $object, Exception\ObjectMetadataMissingException::class],
             ['update', $object, null],
 
-            ['delete', 'foo',   Exception\InvalidArgumentException::class],
+            ['delete', null,   Exception\InvalidArgumentException::class],
             ['delete', $object, Exception\ObjectMetadataMissingException::class],
             ['delete', $object, null],
         ];
@@ -120,7 +120,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
      * @param mixed       $object       The object passed to the service call
      * @param string|null $exception    Possible exception thrown by the transform method
      */
-    public function testTransform($method, $object, $exception = null)
+    public function testTransform($method, ArrayObject $object = null, $exception = null)
     {
         if ($exception !== null) {
             $this->setExpectedException($exception);
@@ -136,7 +136,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
             $metadata->setFromArray(
                 [
                     'index' => 'hello',
-                    'type' => 'world'
+                    'type'  => 'world'
                 ]
             );
 
@@ -150,7 +150,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
             $hydrator
                 ->expects($this->once())
                 ->method('extract')
-                ->will($this->returnValue(array()));
+                ->will($this->returnValue($object->getArrayCopy()));
 
             $this->writerManager
                 ->expects($this->once())

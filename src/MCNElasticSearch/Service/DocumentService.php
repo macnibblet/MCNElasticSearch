@@ -115,7 +115,7 @@ class DocumentService implements DocumentServiceInterface
         $hydrator = $this->hydratorManager->get($metadata->getHydrator());
 
         $data = $hydrator->extract($object);
-        $id   = isset($data[$metadata->getIndex()]) ? $data[$metadata->getId()] : null;
+        $id   = isset($data[$metadata->getId()]) ? $data[$metadata->getId()] : null;
 
         return new Document\DocumentEntity($metadata->getIndex(), $metadata->getType(), $id, $data);
     }
