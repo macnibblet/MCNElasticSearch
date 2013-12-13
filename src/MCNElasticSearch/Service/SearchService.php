@@ -42,7 +42,6 @@ namespace MCNElasticSearch\Service;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Elasticsearch\Client;
-use Elasticsearch\Query;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Paginator\Paginator;
 
@@ -95,7 +94,7 @@ class SearchService implements SearchServiceInterface
         $metadata = $this->metadata->getMetadata($objectClassName);
 
         switch ($hydration) {
-            case static::HYDRATE_DOCTRINE_OBJECT:
+            case static::HYDRATE_DOCTRINE:
                 $adapter = new Search\PaginatorAdapter\Doctrine(
                     $this->objectManager->getRepository($objectClassName),
                     $metadata,

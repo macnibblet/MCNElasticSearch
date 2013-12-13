@@ -178,7 +178,7 @@ class CompanyResource implements ListenerAggregateInterface
         $query->addSort($sort);
         $query->setFilter($geoDistanceFilter);
 
-        return $this->searchService->search(CompanyEntity::class, $query, SearchServiceInterface::HYDRATE_DOCTRINE_OBJECT);
+        return $this->searchService->search(CompanyEntity::class, $query, SearchServiceInterface::HYDRATE_DOCTRINE);
     }
 }
 ```

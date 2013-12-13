@@ -40,7 +40,6 @@
 
 namespace MCNElasticSearch\Service;
 
-use Elasticsearch\Query;
 use Zend\EventManager\EventsCapableInterface;
 
 /**
@@ -48,8 +47,8 @@ use Zend\EventManager\EventsCapableInterface;
  */
 interface SearchServiceInterface extends EventsCapableInterface
 {
-    const HYDRATE_RAW             = 'raw';
-    const HYDRATE_DOCTRINE_OBJECT = 'objectManager';
+    const HYDRATE_RAW      = 'raw';
+    const HYDRATE_DOCTRINE = 'doctrine';
 
     /**
      * Perform a search
