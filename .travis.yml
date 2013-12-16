@@ -15,5 +15,5 @@ after_script:
   - php vendor/bin/coveralls -v
 
 notifications:
-  irc: "irc.freenode.org#pmg"
+  irc: "irc.freenode.org#pmg.se"
   email: false
