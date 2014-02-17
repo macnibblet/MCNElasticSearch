@@ -74,7 +74,14 @@ class Immediate implements WriterInterface
      */
     public function update(DocumentEntity $document)
     {
-        $this->client->update($document);
+        $doc = $document->toArray();
+
+        // Move it
+        $tmp = $doc['body'];
+        unset($doc['body']);
+        $doc['body']['doc'] = $tmp;
+
+        $this->client->update($doc);
     }
 
     /**
@@ -86,7 +93,7 @@ class Immediate implements WriterInterface
      */
     public function delete(DocumentEntity $document)
     {
-        $this->client->delete($document);
+        $this->client->delete($document->toArray());
     }
 
     /**
@@ -98,6 +105,6 @@ class Immediate implements WriterInterface
      */
     public function insert(DocumentEntity $document)
     {
-        $this->client->index($document);
+        $this->client->index($document->toArray());
     }
 }

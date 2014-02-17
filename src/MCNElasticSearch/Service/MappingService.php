@@ -99,7 +99,9 @@ class MappingService implements MappingServiceInterface
         $indexes = array_unique($indexes);
 
         array_walk($indexes, function ($index) {
-            $this->client->indices()->create(['index' => $index]);
+            if (! $this->client->indices()->exists(['index' => $index])) {
+                $this->client->indices()->create(['index' => $index]);
+            }
         });
 
         /** @var $metadata \MCNElasticSearch\Options\MetadataOptions */
@@ -118,14 +120,8 @@ class MappingService implements MappingServiceInterface
                 $response = $this->client->indices()->putMapping($mapping);
 
             } catch (Exception $exception) {
-
-                $response = [
-                    'ok'    => false,
-                    'error' => $exception->getMessage()
-                ];
-
+                $response = ['ok' => false, 'error' => $exception->getMessage()];
             } finally {
-
                 $this->getEventManager()
                      ->trigger('create', $this, compact('mapping', 'response', 'metadata'));
             }

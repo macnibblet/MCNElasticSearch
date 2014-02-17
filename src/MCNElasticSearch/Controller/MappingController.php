@@ -107,7 +107,7 @@ class MappingController extends AbstractActionController
         $response = $event->getParam('response');
         $metadata = $event->getParam('metadata');
 
-        if (isset($response['ok']) && $response['ok']) {
+        if (isset($response['acknowledged']) && $response['acknowledged']) {
             $this->console->write('[Success] ', ColorInterface::GREEN);
             $this->console->writeLine($metadata->getType());
         } else {

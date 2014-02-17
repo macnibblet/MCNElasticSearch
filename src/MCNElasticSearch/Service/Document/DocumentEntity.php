@@ -121,4 +121,14 @@ final class DocumentEntity implements ArrayAccess
     {
         unset($this->{$offset});
     }
+
+    public function toArray()
+    {
+        return [
+            'id'    => $this->id,
+            'type'  => $this->type,
+            'index' => $this->index,
+            'body'  => $this->body
+        ];
+    }
 }

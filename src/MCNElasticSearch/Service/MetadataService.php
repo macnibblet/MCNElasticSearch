@@ -84,9 +84,11 @@ class MetadataService implements MetadataServiceInterface
      */
     public function getMetadata($className)
     {
-        if (isset($this->metadata[$className])) {
-            return $this->metadata[$className];
-        }
+        do {
+            if (isset($this->metadata[$className])) {
+                return $this->metadata[$className];
+            }
+        } while ($className = get_parent_class($className));
 
         throw new Exception\ObjectMetadataMissingException;
     }
