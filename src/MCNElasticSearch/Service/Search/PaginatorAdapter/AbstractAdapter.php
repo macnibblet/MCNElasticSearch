@@ -84,11 +84,8 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function count()
     {
-        $query = $this->query;
-        $query['body'] = $query['body']['query'];
-
         if ($this->count === null) {
-            $this->count = $this->client->count($query)['count'];
+            $this->count = $this->client->count($this->query)['count'];
         }
 
         return $this->count;
