@@ -130,6 +130,10 @@ class Doctrine extends AbstractAdapter
                     $result[$hit['_id']]['sort'][$sortingKeys[$index]] = $value;
                 }
             }
+
+            if (isset($hit['fields'])) {
+                $result[$hit['_id']]['fields'] = $hit['fields'];
+            }
         }
 
         return $result;
