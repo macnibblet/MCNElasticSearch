@@ -85,7 +85,7 @@ abstract class AbstractAdapter implements AdapterInterface
     public function count()
     {
         if ($this->count === null) {
-            $this->count = $this->client->count($this->query)['count'];
+            $this->count = $this->client->search($this->query + ['search_type' => 'count'])['hits']['total'];
         }
 
         return $this->count;
