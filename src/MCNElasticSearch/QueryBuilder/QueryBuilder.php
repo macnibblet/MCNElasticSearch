@@ -6,11 +6,17 @@
 namespace MCNElasticSearch\QueryBuilder;
 
 use MCNElasticSearch\QueryBuilder\Composite\CompositeInterface;
+use MCNElasticSearch\QueryBuilder\Facet\FacetInterface;
 use MCNElasticSearch\QueryBuilder\Filter\FilterInterface;
 use MCNElasticSearch\QueryBuilder\Query\QueryInterface;
 
 class QueryBuilder
 {
+    /**
+     * @var array|null
+     */
+    protected $fields = null;
+
     /**
      * @var integer
      */
@@ -31,6 +37,11 @@ class QueryBuilder
      */
     protected $filter;
 
+    /**
+     * @var FacetInterface
+     */
+    protected $facet;
+
     public function __construct()
     {
         $this->sort = new Container\SortContainer();
@@ -44,6 +55,11 @@ class QueryBuilder
     public function setQuery($query)
     {
         $this->query = $query;
+    }
+
+    public function setFacet($facet)
+    {
+        $this->facet = $facet;
     }
 
     public function sort()
@@ -83,20 +99,35 @@ class QueryBuilder
         return $this->size;
     }
 
+    /**
+     * @param array $fields
+     */
+    public function setFields(array $fields)
+    {
+        $this->fields = $fields;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
     protected function getFilterArray()
     {
         if ($this->filter instanceof FilterInterface) {
             list ($method, $body)  = $this->filter->toArray();
 
             return [$method => $body];
-        } else {
-
-            if ($this->filter instanceof CompositeInterface && $this->filter->isEmpty()) {
-                return [];
-            }
-
-            return $this->filter->toArray();
         }
+
+        if ($this->filter instanceof CompositeInterface && $this->filter->isEmpty()) {
+            return [];
+        }
+
+        return $this->filter->toArray();
     }
 
     protected function getQueryArray()
@@ -105,14 +136,32 @@ class QueryBuilder
             list ($method, $body) = $this->query->toArray();
 
             return [$method => $body];
-        } else {
-
-            if ($this->query instanceof CompositeInterface && $this->query->isEmpty()) {
-                return [];
-            }
-
-            return $this->query->toArray();
         }
+
+        if ($this->query instanceof CompositeInterface && $this->query->isEmpty()) {
+            return [];
+        }
+
+        return $this->query->toArray();
+    }
+
+    protected function getFacetArray()
+    {
+        if ($this->facet === null) {
+            return [];
+        }
+
+        if ($this->facet instanceof FacetInterface) {
+            list ($method, $body) = $this->facet->toArray();
+
+            return [$method => $body];
+        }
+
+        if ($this->facet instanceof CompositeInterface && $this->facet->isEmpty()) {
+            return [];
+        }
+
+        return $this->facet->toArray();
     }
 
     public function toArray()
@@ -125,12 +174,20 @@ class QueryBuilder
                 ],
             ],
 
+            'fields' => $this->fields,
+            'facets' => $this->getFacetArray(),
+
             'from' => $this->from,
             'size' => $this->size
         ];
     }
 
     public function toJson()
+    {
+        return json_encode($this->toArray());
+    }
+
+    public function __toString()
     {
         return json_encode($this->toArray(), JSON_PRETTY_PRINT);
     }

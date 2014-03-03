@@ -40,6 +40,7 @@
 
 namespace MCNElasticSearch\Service;
 
+use MCNElasticSearch\QueryBuilder\QueryBuilder;
 use Zend\EventManager\EventsCapableInterface;
 
 /**
@@ -51,7 +52,18 @@ interface SearchServiceInterface extends EventsCapableInterface
     const HYDRATE_DOCTRINE = 'doctrine';
 
     /**
-     * Perform a search
+     * Perform a raw query
+     *
+     * @param string              $objectClassName
+     * @param string|QueryBuilder $query
+     * @param string              $type
+     *
+     * @return mixed
+     */
+    public function query($objectClassName, $query, $type = 'query_then_fetch');
+
+    /**
+     * Perform a paginated query
      *
      * @param string $objectClassName
      * @param string $query

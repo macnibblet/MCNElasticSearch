@@ -42,6 +42,7 @@ namespace MCNElasticSearch\Service;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Elasticsearch\Client;
+use MCNElasticSearch\QueryBuilder\QueryBuilder;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Paginator\Paginator;
 
@@ -79,13 +80,17 @@ class SearchService implements SearchServiceInterface
         $this->objectManager = $objectManager;
     }
 
-    public function query($objectClassName, $query)
+    public function query($objectClassName, $query, $type = 'query_then_fetch')
     {
+        if ($query instanceof QueryBuilder) {
+            $query = $query->toJson();
+        }
+
         $metadata   = $this->metadata->getMetadata($objectClassName);
         $parameters = [
             'index' => $metadata->getIndex(),
             'type'  => $metadata->getType(),
-            'body'  => $query
+            'body'  => $query,
         ];
 
         return $this->client->search($parameters);
@@ -103,6 +108,10 @@ class SearchService implements SearchServiceInterface
      */
     public function search($objectClassName, $query, $hydration = self::HYDRATE_RAW, array $options = [])
     {
+        if ($query instanceof QueryBuilder) {
+            $query = $query->toJson();
+        }
+
         $metadata = $this->metadata->getMetadata($objectClassName);
 
         switch ($hydration) {
