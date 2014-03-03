@@ -6,9 +6,8 @@
 namespace MCNElasticSearch\QueryBuilder\Composite;
 
 use MCNElasticSearch\QueryBuilder\ExpressionInterface;
-use MCNElasticSearch\QueryBuilder\Filter\FilterInterface;
 
-class Bool implements ExpressionInterface
+class Bool implements CompositeInterface
 {
     protected $must = [];
 
@@ -29,6 +28,11 @@ class Bool implements ExpressionInterface
     public function should(ExpressionInterface $expression)
     {
         $this->should[] = $expression;
+    }
+
+    public function isEmpty()
+    {
+        return empty($this->must) && empty($this->mustNot) && empty($this->should);
     }
 
     public function toArray()

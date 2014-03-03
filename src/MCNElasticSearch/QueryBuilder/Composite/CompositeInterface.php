@@ -5,7 +5,9 @@
 
 namespace MCNElasticSearch\QueryBuilder\Composite;
 
-interface CompositeInterface
+use MCNElasticSearch\QueryBuilder\ExpressionInterface;
+
+interface CompositeInterface extends ExpressionInterface
 {
-    public function toArray();
+    public function isEmpty();
 }

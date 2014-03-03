@@ -79,6 +79,18 @@ class SearchService implements SearchServiceInterface
         $this->objectManager = $objectManager;
     }
 
+    public function query($objectClassName, $query)
+    {
+        $metadata   = $this->metadata->getMetadata($objectClassName);
+        $parameters = [
+            'index' => $metadata->getIndex(),
+            'type'  => $metadata->getType(),
+            'body'  => $query
+        ];
+
+        return $this->client->search($parameters);
+    }
+
     /**
      * @param string $objectClassName
      * @param string $query
