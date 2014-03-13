@@ -77,6 +77,13 @@ class MetadataOptions extends AbstractOptions
     protected $hydrator;
 
     /**
+     * If the object has a parent object
+     *
+     * @var array|null
+     */
+    protected $parent;
+
+    /**
      * The writer to use for pushing data to elastic search
      *
      * @var string
@@ -182,5 +189,25 @@ class MetadataOptions extends AbstractOptions
     public function getMapping()
     {
         return $this->mapping;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param array|null $parent
+     */
+    public function setParent(array $parent)
+    {
+        if (! isset($parent['accessor']) || !isset($parent['getter'])) {
+            throw new Exception\InvalidArgumentException('Missing accessor or getter on the parent association');
+        }
+
+        $this->parent = $parent;
     }
 }

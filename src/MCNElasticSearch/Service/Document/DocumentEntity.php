@@ -73,6 +73,11 @@ final class DocumentEntity implements ArrayAccess
     protected $body;
 
     /**
+     * @var mixed
+     */
+    protected $parent;
+
+    /**
      * @param string      $index
      * @param string      $type
      * @param string|null $id
@@ -84,6 +89,22 @@ final class DocumentEntity implements ArrayAccess
         $this->type  = (string) $type;
         $this->index = (string) $index;
         $this->body  = $body;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param mixed $parent
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
     }
 
     /**
@@ -124,11 +145,6 @@ final class DocumentEntity implements ArrayAccess
 
     public function toArray()
     {
-        return [
-            'id'    => $this->id,
-            'type'  => $this->type,
-            'index' => $this->index,
-            'body'  => $this->body
-        ];
+        return get_object_vars($this);
     }
 }

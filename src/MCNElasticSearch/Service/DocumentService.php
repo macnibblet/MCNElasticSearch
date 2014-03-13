@@ -136,6 +136,15 @@ class DocumentService implements DocumentServiceInterface
         $metadata = $this->getMetadata($object);
         $document = $this->createDocument($object, $metadata);
 
+        $parent = $metadata->getParent();
+        if ($parent !== null) {
+            $document->setParent(
+                $object
+                    ->$parent['accessor']()
+                    ->$parent['getter']()
+            );
+        }
+
         $writer = $writer ?: $metadata->getWriter();
         $writer = $this->writerManager->get($writer);
         $writer->insert($document);
@@ -156,6 +165,15 @@ class DocumentService implements DocumentServiceInterface
     {
         $metadata = $this->getMetadata($object);
         $document = $this->createDocument($object, $metadata);
+
+        $parent = $metadata->getParent();
+        if ($parent !== null) {
+            $document->setParent(
+                $object
+                    ->$parent['accessor']()
+                    ->$parent['getter']()
+            );
+        }
 
         $writer = $writer ?: $metadata->getWriter();
         $writer = $this->writerManager->get($writer);
