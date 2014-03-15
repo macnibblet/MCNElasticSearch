@@ -13,11 +13,6 @@ use MCNElasticSearch\QueryBuilder\Query\QueryInterface;
 class QueryBuilder
 {
     /**
-     * @var array|null
-     */
-    protected $fields = null;
-
-    /**
      * @var integer
      */
     protected $from = 0;
@@ -42,9 +37,25 @@ class QueryBuilder
      */
     protected $facet;
 
+    /**
+     * @var Container\ScriptFieldContainer
+     */
+    protected $scriptFields;
+
+    /**
+     * @var mixed
+     */
+    protected $source = false;
+
+    /**
+     * @var Container\SortContainer
+     */
+    protected $sort;
+
     public function __construct()
     {
-        $this->sort = new Container\SortContainer();
+        $this->sort         = new Container\SortContainer();
+        $this->scriptFields = new Container\ScriptFieldContainer();
     }
 
     public function setFilter($filter)
@@ -100,19 +111,29 @@ class QueryBuilder
     }
 
     /**
-     * @param array $fields
+     * @return mixed
      */
-    public function setFields(array $fields)
+    public function getSource()
     {
-        $this->fields = $fields;
+        return $this->source;
     }
 
     /**
-     * @return array|null
+     * @param mixed $source
      */
-    public function getFields()
+    public function setSource($source)
     {
-        return $this->fields;
+        $this->source = $source;
+    }
+
+    public function getSort()
+    {
+        return $this->sort;
+    }
+
+    public function getScriptFields()
+    {
+        return $this->scriptFields;
     }
 
     protected function getFilterArray()
@@ -148,7 +169,7 @@ class QueryBuilder
     protected function getFacetArray()
     {
         if ($this->facet === null) {
-            return [];
+            return false;
         }
 
         if ($this->facet instanceof FacetInterface) {
@@ -164,9 +185,27 @@ class QueryBuilder
         return $this->facet->toArray();
     }
 
+    protected function getSortArray()
+    {
+        if ($this->sort->isEmpty()) {
+            return false;
+        }
+
+        return iterator_to_array($this->sort->toArray());
+    }
+
+    protected function getScriptFieldsArray()
+    {
+        if ($this->scriptFields->isEmpty()) {
+            return false;
+        }
+
+        return iterator_to_array($this->scriptFields->toArray());
+    }
+
     public function toArray()
     {
-        return [
+        return array_filter([
             'query' => [
                 'filtered' => [
                     'filter' => $this->getFilterArray(),
@@ -174,12 +213,15 @@ class QueryBuilder
                 ],
             ],
 
-            'fields' => $this->fields,
             'facets' => $this->getFacetArray(),
+            'sort'   => $this->getSortArray(),
+
+            '_source'       => $this->source,
+            'script_fields' => $this->getScriptFieldsArray(),
 
             'from' => $this->from,
             'size' => $this->size
-        ];
+        ]);
     }
 
     public function toJson()

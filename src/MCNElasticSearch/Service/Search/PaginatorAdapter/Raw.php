@@ -45,6 +45,8 @@ namespace MCNElasticSearch\Service\Search\PaginatorAdapter;
  */
 class Raw extends AbstractAdapter
 {
+    protected $filter = ['_id', '_index', '_score', '_type'];
+
     /**
      * Returns an collection of items for a page.
      *
@@ -57,6 +59,14 @@ class Raw extends AbstractAdapter
         $this->query['from'] = $offset;
         $this->query['size'] = $itemCountPerPage;
 
-        return $this->client->search($this->query)['hits']['hits'];
+        $hits = $this->client->search($this->query)['hits']['hits'];
+        $hits = array_map(function ($hit) {
+            foreach ($this->filter as $prop) {
+                unset($hit[$prop]);
+            }
+            return $hit;
+        }, $hits);
+
+        return $hits;
     }
 }
