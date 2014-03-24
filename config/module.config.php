@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,18 +34,19 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
 use MCNElasticSearch\Service\Document\Writer\Adapter\DevNull;
 use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
+use MCNElasticSearch\Service\Document\Writer\Logger;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
+use MCNElasticSearch\Service\Search\Paginator\Adapter\Raw;
 use MCNElasticSearch\Service\SearchService;
-use MCNElasticSearch\ServiceFactory\Document\Writer\Adapter\ImmediateFactory;
-use MCNElasticSearch\Service\Document\Writer\Logger;
-use MCNElasticSearch\ServiceFactory\Document\Writer\LoggerFactory;
+use MCNElasticSearch\Factory\Service\Document\Writer\Adapter\ImmediateFactory;
+use MCNElasticSearch\Factory\Service\Document\Writer\LoggerFactory;
 use Psr\Log\LogLevel;
 
 return [
@@ -97,6 +98,16 @@ return [
             'factories' => [
                 Logger::class    => LoggerFactory::class,
                 Immediate::class => ImmediateFactory::class
+            ]
+        ],
+
+        'adapter_manager' => [
+            'invokables' => [
+                Raw::class => Raw::class
+            ],
+
+            'factories' => [
+                Doctrine::class => DoctrineFactory::class,
             ]
         ],
 

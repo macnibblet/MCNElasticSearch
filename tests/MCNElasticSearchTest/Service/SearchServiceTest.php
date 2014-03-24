@@ -7,7 +7,7 @@ use MCNElasticSearch\Service\Search\Criteria\ExpressionBuilder;
 use MCNElasticSearch\Service\SearchService;
 
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ use MCNElasticSearch\Service\SearchService;
  * @author      Antoine Hedgecock <antoine@pmg.se>
  * @author      Jonas Eriksson <jonas@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
