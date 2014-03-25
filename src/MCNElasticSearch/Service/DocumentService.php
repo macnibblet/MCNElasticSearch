@@ -135,10 +135,21 @@ class DocumentService implements DocumentServiceInterface
         if ($metadata->getRouting() !== null) {
 
             $routing = $this->routingManager->get($metadata->getRouting())->getRouting($object);
-
             if ($routing) {
                 $document->setRouting($routing);
             }
+        }
+
+        if ($metadata->getParent() !== null) {
+
+            $parent       = $metadata->getParent();
+            $parentObject = $object->{$parent['accessor']}();
+
+            if ($parentObject === null && $document->getRouting() === null) {
+                throw new Exception\RuntimeException('Parent object cannot be null without specifying routing');
+            }
+
+            $document->setParent($parentObject->{$parent['getter']}());
         }
 
         return $document;
@@ -160,15 +171,6 @@ class DocumentService implements DocumentServiceInterface
         $metadata = $this->getMetadata($object);
         $document = $this->createDocument($object, $metadata);
 
-        $parent = $metadata->getParent();
-        if ($parent !== null) {
-            $document->setParent(
-                $object
-                    ->$parent['accessor']()
-                    ->$parent['getter']()
-            );
-        }
-
         $writer = $writer ?: $metadata->getWriter();
         $writer = $this->writerManager->get($writer);
         $writer->insert($document);
@@ -189,15 +191,6 @@ class DocumentService implements DocumentServiceInterface
     {
         $metadata = $this->getMetadata($object);
         $document = $this->createDocument($object, $metadata);
-
-        $parent = $metadata->getParent();
-        if ($parent !== null) {
-            $document->setParent(
-                $object
-                    ->$parent['accessor']()
-                    ->$parent['getter']()
-            );
-        }
 
         $writer = $writer ?: $metadata->getWriter();
         $writer = $this->writerManager->get($writer);
