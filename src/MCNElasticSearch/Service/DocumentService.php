@@ -145,11 +145,11 @@ class DocumentService implements DocumentServiceInterface
             $parent       = $metadata->getParent();
             $parentObject = $object->{$parent['accessor']}();
 
-            if ($parentObject === null && $document->getRouting() === null) {
+            if ($parentObject !== null) {
+                $document->setParent($parentObject->{$parent['getter']}());
+            } else if ($document->getRouting() === null) {
                 throw new Exception\RuntimeException('Parent object cannot be null without specifying routing');
             }
-
-            $document->setParent($parentObject->{$parent['getter']}());
         }
 
         return $document;
