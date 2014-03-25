@@ -39,11 +39,11 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNElasticSearch\Factory\Service\Exception;
+namespace MCNElasticSearch\Factory\Exception;
 
 /**
- * Interface ExceptionInterface
+ * Class DomainException
  */
-interface ExceptionInterface
+class DomainException extends \DomainException implements ExceptionInterface
 {
 }

@@ -33,7 +33,7 @@ class AdapterPluginManager extends AbstractPluginManager
         }
 
         throw new Exception\InvalidAdapterException(sprintf(
-            'Plugin of type %s is invalid; must implement %s\Helper\HelperInterface',
+            'Plugin of type %s is invalid; must implement %s\Adapter\AbstractAdapter',
             (is_object($plugin) ? get_class($plugin) : gettype($plugin)),
             __NAMESPACE__
         ));

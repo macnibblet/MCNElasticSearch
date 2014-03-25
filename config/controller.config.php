@@ -39,7 +39,7 @@
  */
 
 use MCNElasticSearch\Controller\MappingController;
-use MCNElasticSearch\ControllerFactory\MappingControllerFactory;
+use MCNElasticSearch\Factory\Controller\MappingControllerFactory;
 
 return [
     'factories' => [

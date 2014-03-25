@@ -40,6 +40,7 @@
 
 namespace MCNElasticSearch\Factory\Service;
 
+use MCNElasticSearch\Routing\RoutingPluginManager;
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MetadataService;
@@ -61,6 +62,7 @@ class DocumentServiceFactory extends AbstractFactory
         $service = new DocumentService(
             $serviceLocator->get(MetadataService::class),
             $serviceLocator->get(WriterPluginManager::class),
+            $serviceLocator->get(RoutingPluginManager::class),
             $serviceLocator->get('hydratorManager')
         );
 

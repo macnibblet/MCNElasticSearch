@@ -93,7 +93,11 @@ class Immediate implements WriterInterface
      */
     public function delete(DocumentEntity $document)
     {
-        $this->client->delete($document->toArray());
+        $doc = $document->toArray();
+
+        unset($doc['body']);
+
+        $this->client->delete($doc);
     }
 
     /**

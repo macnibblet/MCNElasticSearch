@@ -41,6 +41,7 @@
 namespace MCNElasticSearch\Service;
 
 use MCNElasticSearch\Options\MetadataOptions;
+use MCNElasticSearch\Routing\RoutingPluginManager;
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Stdlib\Hydrator\HydratorPluginManager;
@@ -63,6 +64,11 @@ class DocumentService implements DocumentServiceInterface
     protected $writerManager;
 
     /**
+     * @var RoutingPluginManager
+     */
+    protected $routingManager;
+
+    /**
      * @var HydratorPluginManager
      */
     protected $hydratorManager;
@@ -70,15 +76,18 @@ class DocumentService implements DocumentServiceInterface
     /**
      * @param MetadataServiceInterface $metadata
      * @param WriterPluginManager      $writerManager
+     * @param RoutingPluginManager     $routingManager
      * @param HydratorPluginManager    $hydratorManager
      */
     public function __construct(
         MetadataServiceInterface $metadata,
         WriterPluginManager $writerManager,
+        RoutingPluginManager $routingManager,
         HydratorPluginManager $hydratorManager
     ) {
         $this->metadata        = $metadata;
         $this->writerManager   = $writerManager;
+        $this->routingManager  = $routingManager;
         $this->hydratorManager = $hydratorManager;
     }
 
@@ -117,7 +126,22 @@ class DocumentService implements DocumentServiceInterface
         $data = $hydrator->extract($object);
         $id   = isset($data[$metadata->getId()]) ? $data[$metadata->getId()] : null;
 
-        return new Document\DocumentEntity($metadata->getIndex(), $metadata->getType(), $id, $data);
+        $document = new Document\DocumentEntity();
+        $document->setId($id);
+        $document->setType($metadata->getType());
+        $document->setIndex($metadata->getIndex());
+        $document->setBody($data);
+
+        if ($metadata->getRouting() !== null) {
+
+            $routing = $this->routingManager->get($metadata->getRouting())->getRouting($object);
+
+            if ($routing) {
+                $document->setRouting($routing);
+            }
+        }
+
+        return $document;
     }
 
     /**
@@ -198,6 +222,6 @@ class DocumentService implements DocumentServiceInterface
 
         $writer = $writer ?: $metadata->getWriter();
         $writer = $this->writerManager->get($writer);
-        $writer->insert($document);
+        $writer->delete($document);
     }
 }

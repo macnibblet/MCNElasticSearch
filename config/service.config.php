@@ -39,6 +39,8 @@
  */
 
 use Elasticsearch\Client;
+use MCNElasticSearch\Factory\Routing\RoutingPluginManagerFactory;
+use MCNElasticSearch\Routing\RoutingPluginManager;
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
@@ -66,6 +68,7 @@ return [
 
         // Abstract plugin managers
         WriterPluginManager::class  => WriterPluginManagerFactory::class,
-        AdapterPluginManager::class => AdapterPluginManagerFactory::class
+        AdapterPluginManager::class => AdapterPluginManagerFactory::class,
+        RoutingPluginManager::class => RoutingPluginManagerFactory::class
     ]
 ];

@@ -81,7 +81,12 @@ class MetadataOptions extends AbstractOptions
      *
      * @var array|null
      */
-    protected $parent;
+    protected $parent = null;
+
+    /**
+     * @var string|null
+     */
+    protected $routing = null;
 
     /**
      * The writer to use for pushing data to elastic search
@@ -93,7 +98,7 @@ class MetadataOptions extends AbstractOptions
     /**
      * @var array
      */
-    protected $mapping;
+    protected $mapping = [];
 
     /**
      * @param string $hydrator
@@ -209,5 +214,21 @@ class MetadataOptions extends AbstractOptions
         }
 
         $this->parent = $parent;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getRouting()
+    {
+        return $this->routing;
+    }
+
+    /**
+     * @param null|string $routing
+     */
+    public function setRouting($routing)
+    {
+        $this->routing = $routing;
     }
 }

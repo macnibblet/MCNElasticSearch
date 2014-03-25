@@ -43,6 +43,7 @@ use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
 use MCNElasticSearch\Service\Document\Writer\Logger;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
+use MCNElasticSearch\Service\Search\Paginator\Adapter\Doctrine;
 use MCNElasticSearch\Service\Search\Paginator\Adapter\Raw;
 use MCNElasticSearch\Service\SearchService;
 use MCNElasticSearch\Factory\Service\Document\Writer\Adapter\ImmediateFactory;
@@ -104,11 +105,11 @@ return [
         'adapter_manager' => [
             'invokables' => [
                 Raw::class => Raw::class
-            ],
-
-            'factories' => [
-                Doctrine::class => DoctrineFactory::class,
             ]
+        ],
+
+        'routing_manager' => [
+
         ],
 
         DocumentService::class => [

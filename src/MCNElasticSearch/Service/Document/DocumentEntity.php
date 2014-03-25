@@ -50,7 +50,7 @@ use ArrayAccess;
  *
  * @internal
  */
-final class DocumentEntity implements ArrayAccess
+final class DocumentEntity
 {
     /**
      * @var string|null
@@ -58,38 +58,29 @@ final class DocumentEntity implements ArrayAccess
     protected $id;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $index;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $type;
 
     /**
-     * @var array
+     * @var array|null
      */
     protected $body;
 
     /**
-     * @var mixed
+     * @var string|null
      */
     protected $parent;
 
     /**
-     * @param string      $index
-     * @param string      $type
-     * @param string|null $id
-     * @param array       $body
+     * @var string|null
      */
-    public function __construct($index, $type, $id = null, array $body = [])
-    {
-        $this->id    = $id === null ? null : (string) $id;
-        $this->type  = (string) $type;
-        $this->index = (string) $index;
-        $this->body  = $body;
-    }
+    protected $routing;
 
     /**
      * @return mixed
@@ -108,39 +99,83 @@ final class DocumentEntity implements ArrayAccess
     }
 
     /**
-     * {@Inheritdoc}
+     * @return array|null
      */
-    public function offsetExists($offset)
+    public function getBody()
     {
-        return isset($this->{$offset});
+        return $this->body;
     }
 
     /**
-     * {@Inheritdoc}
+     * @param array|null $body
      */
-    public function offsetGet($offset)
+    public function setBody($body)
     {
-        return $this->{$offset};
+        $this->body = $body;
     }
 
     /**
-     * {@Inheritdoc}
-     *
-     * @throws Exception\ReadOnlyException
+     * @return null|string
      */
-    public function offsetSet($offset, $value)
+    public function getId()
     {
-        throw new Exception\ReadOnlyException();
+        return $this->id;
     }
 
     /**
-     * {@Inheritdoc}
-     *
-     * @throws Exception\ReadOnlyException
+     * @param null|string $id
      */
-    public function offsetUnset($offset)
+    public function setId($id)
     {
-        unset($this->{$offset});
+        $this->id = $id;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getIndex()
+    {
+        return $this->index;
+    }
+
+    /**
+     * @param null|string $index
+     */
+    public function setIndex($index)
+    {
+        $this->index = $index;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getRouting()
+    {
+        return $this->routing;
+    }
+
+    /**
+     * @param null|string $routing
+     */
+    public function setRouting($routing)
+    {
+        $this->routing = $routing;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param null|string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
     }
 
     public function toArray()
