@@ -117,6 +117,8 @@ class DocumentService implements DocumentServiceInterface
      * @param mixed           $object
      * @param MetadataOptions $metadata
      *
+     * @throws Exception\RuntimeException
+     * 
      * @return Document\DocumentEntity
      */
     protected function createDocument($object, MetadataOptions $metadata)
