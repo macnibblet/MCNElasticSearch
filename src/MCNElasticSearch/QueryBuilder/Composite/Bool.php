@@ -38,15 +38,19 @@ class Bool implements CompositeInterface
     public function toArray()
     {
         $callback = function (ExpressionInterface $filter) {
+            if ($filter instanceof CompositeInterface && $filter->isEmpty()) {
+                return false;
+            }
+
             list ($method, $body) = $filter->toArray();
 
             return [$method => $body];
         };
 
         return ['bool' => [
-            'must'     => array_map($callback, $this->must),
-            'must_not' => array_map($callback, $this->mustNot),
-            'should'   => array_map($callback, $this->should)
+            'must'     => array_values(array_filter(array_map($callback, $this->must))),
+            'must_not' => array_values(array_filter(array_map($callback, $this->mustNot))),
+            'should'   => array_values(array_filter(array_map($callback, $this->should)))
         ]];
     }
 }

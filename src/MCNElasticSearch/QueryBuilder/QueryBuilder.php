@@ -52,6 +52,11 @@ class QueryBuilder
      */
     protected $sort;
 
+    /**
+     * @var HasParent
+     */
+    protected $hasParent;
+
     public function __construct()
     {
         $this->sort         = new Container\SortContainer();
@@ -124,6 +129,22 @@ class QueryBuilder
     public function setSource($source)
     {
         $this->source = $source;
+    }
+
+    /**
+     * @return HasParent
+     */
+    public function getHasParent()
+    {
+        return $this->hasParent;
+    }
+
+    /**
+     * @param HasParent $hasParent
+     */
+    public function setHasParent(HasParent $hasParent)
+    {
+        $this->hasParent = $hasParent;
     }
 
     public function getSort()
@@ -203,6 +224,15 @@ class QueryBuilder
         return iterator_to_array($this->scriptFields->toArray());
     }
 
+    protected function getHasParentArray()
+    {
+        if (! $this->hasParent || $this->hasParent->isEmpty()) {
+            return false;
+        }
+
+        return $this->hasParent->toArray();
+    }
+
     public function toArray()
     {
         return array_filter([
@@ -211,6 +241,7 @@ class QueryBuilder
                     'filter' => $this->getFilterArray(),
                     'query'  => $this->getQueryArray()
                 ],
+
             ],
 
             'facets' => $this->getFacetArray(),

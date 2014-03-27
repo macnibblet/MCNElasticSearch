@@ -45,6 +45,11 @@ namespace MCNElasticSearch\Service\Search\Paginator\Adapter;
  */
 class Raw extends AbstractAdapter
 {
+    /**
+     * List of filtered properties
+     *
+     * @var array
+     */
     protected $filter = ['_id', '_index', '_score', '_type'];
 
     /**

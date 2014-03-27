@@ -107,6 +107,7 @@ class SearchService implements SearchServiceInterface
             $query = $query->toJson();
         }
 
+
         $metadata = $this->metadata->getMetadata($objectClassName);
         $adapter  = $this->adapterManager->get($adapter, $adapterOptions, false);
 

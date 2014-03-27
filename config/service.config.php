@@ -70,5 +70,5 @@ return [
         WriterPluginManager::class  => WriterPluginManagerFactory::class,
         AdapterPluginManager::class => AdapterPluginManagerFactory::class,
         RoutingPluginManager::class => RoutingPluginManagerFactory::class
-    ]
+    ],
 ];
