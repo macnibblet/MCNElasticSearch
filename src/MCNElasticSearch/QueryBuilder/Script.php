@@ -30,8 +30,8 @@ class Script implements ExpressionInterface
     public function toArray()
     {
         return ['script', [
-            'script'     => $this->script,
-            'parameters' => $this->parameters
+            'script' => $this->script,
+            'params' => $this->parameters
         ]];
     }
 }

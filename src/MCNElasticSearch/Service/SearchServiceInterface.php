@@ -45,7 +45,7 @@ use MCNElasticSearch\Service\Search\Paginator\Adapter\Doctrine;
 use Zend\EventManager\EventsCapableInterface;
 
 /**
- * Interface SearchServiceInterface
+ * Interface DealSearchServiceInterface
  */
 interface SearchServiceInterface extends EventsCapableInterface
 {
