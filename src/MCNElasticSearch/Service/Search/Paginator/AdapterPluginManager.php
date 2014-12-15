@@ -5,12 +5,13 @@
 
 namespace MCNElasticSearch\Service\Search\Paginator;
 
+use MCNElasticSearch\Service\Search\Paginator\Adapter\AbstractAdapter;
 use Zend\ServiceManager\AbstractPluginManager;
 
 /**
  * Class AdapterPluginManager
  *
- * @method \MCNElasticSearch\Service\Search\Paginator\Adapter\AbstractAdapter get($name, $options = [], $usePeeringServiceManagers = true)
+ * @method AbstractAdapter get($name, $options = [], $usePeeringServiceManagers = true)
  */
 class AdapterPluginManager extends AbstractPluginManager
 {

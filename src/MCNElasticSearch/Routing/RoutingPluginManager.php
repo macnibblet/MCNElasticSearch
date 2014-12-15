@@ -10,7 +10,7 @@ use Zend\ServiceManager\AbstractPluginManager;
 /**
  * Class RoutingPluginManager
  *
- * @method \MCNElasticSearch\Routing\RoutingStrategyInterface get($name, $options = array(), $usePeeringServiceManagers = true)
+ * @method RoutingStrategyInterface get($name, $options = array(), $usePeeringServiceManagers = true)
  */
 class RoutingPluginManager extends AbstractPluginManager
 {
