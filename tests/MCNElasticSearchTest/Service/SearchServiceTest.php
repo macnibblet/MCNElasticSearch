@@ -4,6 +4,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Elasticsearch\Client;
 use MCNElasticSearch\Service\MetadataServiceInterface;
 use MCNElasticSearch\Service\Search\Criteria\ExpressionBuilder;
+use MCNElasticSearch\Service\Search\Paginator\AdapterPluginManager;
 use MCNElasticSearch\Service\SearchService;
 
 /**
@@ -59,11 +60,6 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    protected $objectManager;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
     protected $metadataService;
 
     /**
@@ -71,16 +67,21 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
      */
     protected $service;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $adapterManager;
+
     protected function setUp()
     {
-        $this->client          = $this->getMock(Client::class);
-        $this->objectManager   = $this->getMock(ObjectManager::class);
-        $this->metadataService = $this->getMock(MetadataServiceInterface::class);
+        $this->client               = $this->getMock(Client::class);
+        $this->metadataService      = $this->getMock(MetadataServiceInterface::class);
+        $this->adapterPluginManager = $this->getMock(AdapterPluginManager::class);
 
         $this->service = new SearchService(
             $this->client,
             $this->metadataService,
-            $this->objectManager
+            $this->adapterPluginManager
         );
     }
 

@@ -31,7 +31,6 @@ class OneByOneStrategy implements LoaderStrategyInterface
         $collection = new ArrayCollection();
 
         foreach ($items as $item) {
-
             $result = $repository->findOneBy([$metadata->getId() => $item]);
 
             // not doing this could cause some strange issues!

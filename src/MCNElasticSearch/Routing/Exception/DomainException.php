@@ -1,4 +1,3 @@
-
 <?php
 /**
  * @author Antoine Hedgcock

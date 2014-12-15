@@ -106,9 +106,7 @@ class MappingService implements MappingServiceInterface
 
         /** @var $metadata \MCNElasticSearch\Options\MetadataOptions */
         foreach ($list as $metadata) {
-
             try {
-
                 $mapping = [
                     'index' => $metadata->getIndex(),
                     'type'  => $metadata->getType(),
@@ -149,9 +147,7 @@ class MappingService implements MappingServiceInterface
 
         /** @var $metadata \MCNElasticSearch\Options\MetadataOptions */
         foreach ($list as $metadata) {
-
             try {
-
                 $params = [
                     'index' => $metadata->getIndex(),
                     'type'  => $metadata->getType()
@@ -160,7 +156,6 @@ class MappingService implements MappingServiceInterface
                 $response = $this->client->indices()->deleteMapping($params);
 
             } catch (Exception $exception) {
-
                 $response = [
                     'ok'    => false,
                     'error' => $exception->getMessage()
