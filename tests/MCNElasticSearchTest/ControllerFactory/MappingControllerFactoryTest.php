@@ -43,14 +43,14 @@ namespace MCNElasticSearchTest\ControllerFactory;
 use MCNElasticSearch\Controller\MappingController;
 use MCNElasticSearchTest\Util\ServiceManagerFactory;
 use Zend\Console\Console;
-use MCNElasticSearch\ControllerFactory\MappingControllerFactory;
+use MCNElasticSearch\Factory\Controller\MappingControllerFactory;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 
 class MappingControllerFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \MCNElasticSearch\ControllerFactory\MappingControllerFactory
+     * @var \MCNElasticSearch\Factory\Controller\MappingControllerFactory
      */
     protected $factory;
 

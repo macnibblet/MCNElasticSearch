@@ -45,6 +45,7 @@ use Elastica\Document;
 use Elastica\Response;
 use Elastica\Client;
 use MCNElasticSearch\Options\MetadataOptions;
+use MCNElasticSearch\Routing\RoutingPluginManager;
 use MCNElasticSearch\Service\Document\Writer\WriterInterface;
 use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
@@ -79,15 +80,20 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $service;
 
+    /** @var RoutingPluginManager; */
+    protected $routingPluginManager;
+
     protected function setUp()
     {
         $this->writerManager         = $this->getMock(WriterPluginManager::class);
         $this->metadataService       = $this->getMock(MetadataServiceInterface::class);
         $this->hydratorPluginManager = $this->getMock(HydratorPluginManager::class);
+        $this->routingPluginManager = $this->getMock(RoutingPluginManager::class);
 
         $this->service = new DocumentService(
             $this->metadataService,
             $this->writerManager,
+            $this->routingPluginManager,
             $this->hydratorPluginManager
         );
     }
