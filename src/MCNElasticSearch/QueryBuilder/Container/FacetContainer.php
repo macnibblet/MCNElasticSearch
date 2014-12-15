@@ -24,7 +24,6 @@ class FacetContainer implements CompositeInterface
     {
         $result = [];
         foreach ($this->facets as $facet) {
-
             list ($method, $body) = $facet->toArray();
 
             $result[$facet->getName()][$method] = $body;

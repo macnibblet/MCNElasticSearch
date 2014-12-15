@@ -121,7 +121,6 @@ class Doctrine extends AbstractAdapter
 
         $result = [];
         foreach ($response['hits']['hits'] as $hit) {
-
             $result[$hit['_id']] = [];
 
             if (isset($sortingKeys)) {
@@ -170,7 +169,6 @@ class Doctrine extends AbstractAdapter
         $sorting = array_keys($meta);
 
         foreach ($items as $item) {
-
             $method = 'get' . $this->metadata->getId();
             $id = $item->{$method}();
 

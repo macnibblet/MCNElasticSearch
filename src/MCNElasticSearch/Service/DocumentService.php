@@ -118,7 +118,7 @@ class DocumentService implements DocumentServiceInterface
      * @param MetadataOptions $metadata
      *
      * @throws Exception\RuntimeException
-     * 
+     *
      * @return Document\DocumentEntity
      */
     protected function createDocument($object, MetadataOptions $metadata)
@@ -135,7 +135,6 @@ class DocumentService implements DocumentServiceInterface
         $document->setBody($data);
 
         if ($metadata->getRouting() !== null) {
-
             $routing = $this->routingManager->get($metadata->getRouting())->getRouting($object);
             if ($routing) {
                 $document->setRouting($routing);
@@ -143,13 +142,12 @@ class DocumentService implements DocumentServiceInterface
         }
 
         if ($metadata->getParent() !== null) {
-
             $parent       = $metadata->getParent();
             $parentObject = $object->{$parent['accessor']}();
 
             if ($parentObject !== null) {
                 $document->setParent($parentObject->{$parent['getter']}());
-            } else if ($document->getRouting() === null) {
+            } elseif ($document->getRouting() === null) {
                 throw new Exception\RuntimeException('Parent object cannot be null without specifying routing');
             }
         }
