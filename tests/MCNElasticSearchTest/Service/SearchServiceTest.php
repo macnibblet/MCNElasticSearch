@@ -74,8 +74,8 @@ class SearchServiceTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->client          = $this->getMock(Client::class);
-        $this->metadataService = $this->getMock(MetadataServiceInterface::class);
+        $this->client               = $this->getMock(Client::class);
+        $this->metadataService      = $this->getMock(MetadataServiceInterface::class);
         $this->adapterPluginManager = $this->getMock(AdapterPluginManager::class);
 
         $this->service = new SearchService(

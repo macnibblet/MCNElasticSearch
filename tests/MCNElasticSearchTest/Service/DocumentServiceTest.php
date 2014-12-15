@@ -88,7 +88,7 @@ class DocumentServiceTest extends \PHPUnit_Framework_TestCase
         $this->writerManager         = $this->getMock(WriterPluginManager::class);
         $this->metadataService       = $this->getMock(MetadataServiceInterface::class);
         $this->hydratorPluginManager = $this->getMock(HydratorPluginManager::class);
-        $this->routingPluginManager = $this->getMock(RoutingPluginManager::class);
+        $this->routingPluginManager  = $this->getMock(RoutingPluginManager::class);
 
         $this->service = new DocumentService(
             $this->metadataService,
