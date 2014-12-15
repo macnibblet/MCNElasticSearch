@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,16 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
+use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
+use MCNElasticSearch\Service\Document\Writer\Logger;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
 use MCNElasticSearch\Service\SearchService;
+use Psr\Log\LogLevel;
 
 return [
     'MCNElasticSearch' => [
@@ -55,15 +58,72 @@ return [
          */
         'metadata' => [
 
-            /**
-             * List of object mappings
-             */
-            'objects' => [],
+            'Foo\Entity\BarEntity' => [
+                'hydrator' => 'Foo\Hydrator\BarHydrator,
+                'type'     => 'companies',
+                'index'    => 'lokalbygg',
+
+                'mapping' => [
+                    '_source' => [
+                        'enabled' => true
+                    ],
+
+                    'properties' => [
+
+                        'id'      => ['type' => 'integer'],
+                        'name'    => ['type' => 'string'],
+                        'address' => [
+
+                            'type'       => 'nested',
+                            'properties' => [
+
+                                'id'   => ['type' => 'integer'],
+                                'type' => ['type' => 'string', 'not_analyzed' => true],
+
+                                'firstAddress'  => ['type' => 'string'],
+                                'secondAddress' => ['type' => 'string'],
+                                'zipcode'       => ['type' => 'integer'],
+                                'country'       => ['type' => 'string'],
+                                'coordinates'   => ['type' => 'geo_point'],
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ],
+
+        /**
+         * Logging configuration
+         */
+        'logging' => [
 
             /**
-             * List of types E.g "SQL Tables"
+             * If the logger should be enabled
              */
-            'types' => []
+            'enabled' => false,
+
+            /**
+             * The key used to get the logger utility from the service locator
+             */
+            'logger_service_name'  => null,
+
+            /**
+             * Options that are passed to the MCNElasticSearch\Document\Writer\LoggerOptions
+             */
+            'options' => [
+                'logLevel' => LogLevel::NOTICE
+            ]
+        ],
+
+        /**
+         * Plugin manager for the different writers available
+         */
+        'writer_manager' => [
+            'delegators' => [
+                Immediate::class => [
+                    Logger::class
+                ]
+            ]
         ],
 
         DocumentService::class => [

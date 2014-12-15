@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,31 +34,44 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
 namespace MCNElasticSearch\Service;
 
-use Elastica\Query;
+use MCNElasticSearch\QueryBuilder\QueryBuilder;
+use MCNElasticSearch\Service\Search\Paginator\Adapter\Doctrine;
 use Zend\EventManager\EventsCapableInterface;
 
 /**
- * Interface SearchServiceInterface
+ * Interface DealSearchServiceInterface
  */
 interface SearchServiceInterface extends EventsCapableInterface
 {
-    const HYDRATE_RAW             = 'raw';
-    const HYDRATE_DOCTRINE_OBJECT = 'objectManager';
+    const HYDRATE_RAW      = 'raw';
+    const HYDRATE_DOCTRINE = 'doctrine';
 
     /**
-     * Perform a search
+     * Perform a raw query
      *
-     * @param string          $objectClassName
-     * @param \Elastica\Query $query
-     * @param string          $hydration
+     * @param string              $objectClassName
+     * @param string|QueryBuilder $query
+     * @param string              $type
+     *
+     * @return mixed
+     */
+    public function query($objectClassName, $query, $type = 'query_then_fetch');
+
+    /**
+     * Perform a paginated query
+     *
+     * @param string              $objectClassName
+     * @param string|QueryBuilder $query
+     * @param string              $adapter
+     * @param array               $adapterOptions
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW);
+    public function search($objectClassName, $query, $adapter = Doctrine::class, array $adapterOptions = []);
 }

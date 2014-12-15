@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
@@ -50,21 +50,12 @@ interface MetadataServiceInterface
      *
      * @throws Exception\ObjectMetadataMissingException
      *
-     * @return \MCNElasticSearch\Options\ObjectMetadataOptions
+     * @return \MCNElasticSearch\Options\MetadataOptions
      */
-    public function getObjectMetadata($className);
+    public function getMetadata($className);
 
     /**
-     * @param string $type
-     *
-     * @throws Exception\TypeMappingMissingException
-     *
-     * @return \MCNElasticSearch\Options\TypeMappingOptions
+     * @return \MCNElasticSearch\Options\MetadataOptions[]
      */
-    public function getTypeMapping($type);
-
-    /**
-     * @return \MCNElasticSearch\Options\TypeMappingOptions[]
-     */
-    public function getAllTypeMappings();
+    public function getAllMetadata();
 }

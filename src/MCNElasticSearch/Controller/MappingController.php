@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
@@ -101,18 +101,20 @@ class MappingController extends AbstractActionController
     public function progress(Event $event)
     {
         /**
-         * @var $options  \MCNElasticSearch\Options\TypeMappingOptions
-         * @var $response \Elastica\Response
+         * @var $response array
+         * @var $metadata \MCNElasticSearch\Options\MetadataOptions
          */
-        $options  = $event->getParam('options');
         $response = $event->getParam('response');
+        $metadata = $event->getParam('metadata');
 
-        if ($response->isOk()) {
+        if (isset($response['acknowledged']) && $response['acknowledged']) {
             $this->console->write('[Success] ', ColorInterface::GREEN);
-            $this->console->writeLine($options->getName());
+            $this->console->writeLine($metadata->getType());
         } else {
             $this->console->write('[Error] ', ColorInterface::RED);
-            $this->console->writeLine(sprintf('%s: %s', $options->getName(), $response->getError()));
+            $this->console->writeLine(sprintf('%s: %s', $metadata->getType(), $response['error']));
+            $this->console->write(json_encode($event->getParam('mapping'), JSON_PRETTY_PRINT));
+            $this->console->writeLine();
         }
     }
 

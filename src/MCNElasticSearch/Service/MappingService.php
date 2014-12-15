@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,17 +34,15 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
 namespace MCNElasticSearch\Service;
 
-use Elastica\Client;
-use Elastica\Exception\ResponseException;
-use Elastica\Type\Mapping;
-use Elastica\Type;
-use MCNElasticSearch\Options\TypeMappingOptions;
+use Elasticsearch\Client;
+use Exception;
+use MCNElasticSearch\Options\MetadataOptions;
 use Zend\EventManager\EventManagerAwareTrait;
 
 /**
@@ -55,7 +53,7 @@ class MappingService implements MappingServiceInterface
     use EventManagerAwareTrait;
 
     /**
-     * @var \Elastica\Client
+     * @var \Elasticsearch\Client
      */
     protected $client;
 
@@ -65,8 +63,8 @@ class MappingService implements MappingServiceInterface
     protected $metadata;
 
     /**
-     * @param \Elastica\Client $client
-     * @param MetadataService  $metadata
+     * @param \Elasticsearch\Client $client
+     * @param MetadataService       $metadata
      */
     public function __construct(Client $client, MetadataService $metadata)
     {
@@ -85,35 +83,45 @@ class MappingService implements MappingServiceInterface
      */
     public function create(array $types = [])
     {
-        $mappings = $this->metadata->getAllTypeMappings();
+        $list = $this->metadata->getAllMetadata();
 
         if (! empty($types)) {
-            array_filter(
-                $mappings,
-                function (TypeMappingOptions $t) use ($types) {
-                    return in_array($t->getName(), $types);
-                }
-            );
+            array_filter($list, function (MetadataOptions $t) use ($types) {
+                return in_array($t->getType(), $types);
+            });
         }
 
-        /** @var $options \MCNElasticSearch\Options\TypeMappingOptions */
-        foreach ($mappings as $options) {
+        $extract = function (MetadataOptions $metadata) {
+            return $metadata->getIndex();
+        };
 
-            $type = $this->client->getIndex($options->getIndex())
-                                 ->getType($options->getName());
+        $indexes = array_map($extract, $list);
+        $indexes = array_unique($indexes);
 
-            // this is only the basic mapping *required*
-            $mapping = new Mapping($type);
-            $mapping->setSource($options->getSource());
-            $mapping->setProperties($options->getProperties());
+        array_walk($indexes, function ($index) {
+            if (! $this->client->indices()->exists(['index' => $index])) {
+                $this->client->indices()->create(['index' => $index]);
+            }
+        });
 
+        /** @var $metadata \MCNElasticSearch\Options\MetadataOptions */
+        foreach ($list as $metadata) {
             try {
-                $response = $mapping->send();
-            } catch (ResponseException $exception) {
-                $response = $exception->getResponse();
+                $mapping = [
+                    'index' => $metadata->getIndex(),
+                    'type'  => $metadata->getType(),
+                    'body'  => [
+                        $metadata->getType() => $metadata->getMapping()
+                    ]
+                ];
+
+                $response = $this->client->indices()->putMapping($mapping);
+
+            } catch (Exception $exception) {
+                $response = ['ok' => false, 'error' => $exception->getMessage()];
             } finally {
                 $this->getEventManager()
-                     ->trigger('create', $this, compact('mapping', 'response', 'options'));
+                     ->trigger('create', $this, compact('mapping', 'response', 'metadata'));
             }
         }
     }
@@ -129,28 +137,34 @@ class MappingService implements MappingServiceInterface
      */
     public function delete(array $types = [])
     {
-        $mappings = $this->metadata->getAllTypeMappings();
+        $list = $this->metadata->getAllMetadata();
 
         if (! empty($types)) {
-            array_filter(
-                $mappings,
-                function (TypeMappingOptions $t) use ($types) {
-                    return in_array($t->getName(), $types);
-                }
-            );
+            array_filter($list, function (MetadataOptions $t) use ($types) {
+                return in_array($t->getType(), $types);
+            });
         }
 
-        foreach ($mappings as $options) {
-
-            $type = $this->client->getIndex($options->getIndex())
-                                 ->getType($options->getName());
+        /** @var $metadata \MCNElasticSearch\Options\MetadataOptions */
+        foreach ($list as $metadata) {
             try {
-                $response = $type->delete();
-            } catch (ResponseException $exception) {
-                $response = $exception->getResponse();
+                $params = [
+                    'index' => $metadata->getIndex(),
+                    'type'  => $metadata->getType()
+                ];
+
+                $response = $this->client->indices()->deleteMapping($params);
+
+            } catch (Exception $exception) {
+                $response = [
+                    'ok'    => false,
+                    'error' => $exception->getMessage()
+                ];
+
             } finally {
+
                 $this->getEventManager()
-                     ->trigger('delete', $this, compact('type', 'response', 'options'));
+                    ->trigger('delete', $this, compact('response', 'metadata'));
             }
         }
     }

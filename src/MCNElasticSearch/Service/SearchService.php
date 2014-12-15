@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,15 +34,17 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
 namespace MCNElasticSearch\Service;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Elastica\Client;
-use Elastica\Query;
+use Elasticsearch\Client;
+use MCNElasticSearch\QueryBuilder\QueryBuilder;
+use MCNElasticSearch\Service\Search\Paginator\Adapter\Doctrine;
+use MCNElasticSearch\Service\Search\Paginator\AdapterPluginManager;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Paginator\Paginator;
 
@@ -54,69 +56,69 @@ class SearchService implements SearchServiceInterface
     use EventManagerAwareTrait;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
      * @var MetadataService
      */
     protected $metadata;
 
     /**
-     * @var \Elastica\Client
+     * @var Client
      */
     protected $client;
 
     /**
-     * @param \Elastica\Client         $client
-     * @param MetadataServiceInterface $metadata
-     * @param ObjectManager            $objectManager
+     * @var AdapterPluginManager
      */
-    public function __construct(Client $client, MetadataServiceInterface $metadata, ObjectManager $objectManager)
-    {
-        $this->client        = $client;
-        $this->metadata      = $metadata;
-        $this->objectManager = $objectManager;
-    }
+    protected $adapterManager;
 
     /**
-     * Perform a search
-     *
-     * @param string $objectClassName
-     * @param Query  $query
-     * @param string $hydration
-     * @param array  $options
-     *
-     * @throws Exception\InvalidArgumentException
-     * @return \Zend\Paginator\Paginator
+     * @param Client                   $client
+     * @param MetadataServiceInterface $metadata
+     * @param AdapterPluginManager     $adapterManager
      */
-    public function search($objectClassName, Query $query, $hydration = self::HYDRATE_RAW, array $options = [])
+    public function __construct(
+        Client $client,
+        MetadataServiceInterface $metadata,
+        AdapterPluginManager $adapterManager
+    ) {
+        $this->client         = $client;
+        $this->metadata       = $metadata;
+        $this->adapterManager = $adapterManager;
+    }
+
+    public function query($objectClassName, $query, $type = 'query_then_fetch')
     {
-        $metadata = $this->metadata->getObjectMetadata($objectClassName);
-
-        switch ($hydration) {
-            case static::HYDRATE_DOCTRINE_OBJECT:
-                $adapter = new Search\PaginatorAdapter\Doctrine(
-                    $this->objectManager->getRepository($objectClassName),
-                    $metadata,
-                    new Search\PaginatorAdapter\DoctrineOptions($options)
-                );
-                break;
-
-            case static::HYDRATE_RAW:
-                $adapter = new Search\PaginatorAdapter\Raw();
-                break;
-
-            default:
-                throw new Exception\InvalidArgumentException(sprintf('Unknown hydration mode %s', $hydration));
+        if ($query instanceof QueryBuilder) {
+            $query = $query->toJson();
         }
 
-        $type = $this->client->getIndex($metadata->getIndex())
-                             ->getType($metadata->getType());
+        $metadata   = $this->metadata->getMetadata($objectClassName);
+        $parameters = [
+            'index' => $metadata->getIndex(),
+            'type'  => $metadata->getType(),
+            'body'  => $query,
+        ];
 
-        $adapter->setQuery($query);
-        $adapter->setSearchable($type);
+        return $this->client->search($parameters);
+    }
+
+    public function search($objectClassName, $query, $adapter = Doctrine::class, array $adapterOptions = [])
+    {
+        if ($query instanceof QueryBuilder) {
+            $query = $query->toJson();
+        }
+
+
+        $metadata = $this->metadata->getMetadata($objectClassName);
+        $adapter  = $this->adapterManager->get($adapter, $adapterOptions, false);
+
+        $params = [
+            'index' => $metadata->getIndex(),
+            'type'  => $metadata->getType(),
+            'body'  => $query
+        ];
+
+        $adapter->setClient($this->client);
+        $adapter->setQuery($params);
 
         return new Paginator($adapter);
     }

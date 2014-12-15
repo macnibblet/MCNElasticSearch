@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,14 +34,15 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
 namespace MCNElasticSearch\Service;
 
-use Elastica\Client;
-use Elastica\Document;
+use MCNElasticSearch\Options\MetadataOptions;
+use MCNElasticSearch\Routing\RoutingPluginManager;
+use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Stdlib\Hydrator\HydratorPluginManager;
 
@@ -53,154 +54,167 @@ class DocumentService implements DocumentServiceInterface
     use EventManagerAwareTrait;
 
     /**
-     * @var \Elastica\Client
-     */
-    protected $client;
-
-    /**
      * @var MetadataService
      */
     protected $metadata;
 
     /**
-     * @var \Zend\Stdlib\Hydrator\HydratorPluginManager
+     * @var WriterPluginManager
+     */
+    protected $writerManager;
+
+    /**
+     * @var RoutingPluginManager
+     */
+    protected $routingManager;
+
+    /**
+     * @var HydratorPluginManager
      */
     protected $hydratorManager;
 
     /**
-     * @param \Elastica\Client                            $client
-     * @param MetadataServiceInterface                    $metadata
-     * @param \Zend\Stdlib\Hydrator\HydratorPluginManager $hydratorManager
+     * @param MetadataServiceInterface $metadata
+     * @param WriterPluginManager      $writerManager
+     * @param RoutingPluginManager     $routingManager
+     * @param HydratorPluginManager    $hydratorManager
      */
     public function __construct(
-        Client $client,
         MetadataServiceInterface $metadata,
+        WriterPluginManager $writerManager,
+        RoutingPluginManager $routingManager,
         HydratorPluginManager $hydratorManager
     ) {
-        $this->client          = $client;
         $this->metadata        = $metadata;
+        $this->writerManager   = $writerManager;
+        $this->routingManager  = $routingManager;
         $this->hydratorManager = $hydratorManager;
     }
 
     /**
-     * Converts an object into a elastica document
+     * Retrieve the object meta data
      *
-     * @param  mixed                              $object
-     * @throws Exception\InvalidArgumentException If an invalid object is passed
-     * @return \Elastica\Document
+     * @param $object
+     *
+     * @throws Exception\InvalidArgumentException
+     * @throws Exception\ObjectMetadataMissingException
+     *
+     * @return \MCNElasticSearch\Options\MetadataOptions
      */
-    protected function transform($object)
+    protected function getMetadata($object)
     {
         if (! is_object($object)) {
             throw Exception\InvalidArgumentException::invalidClass($object);
         }
 
         /** @var \Zend\Stdlib\Hydrator\AbstractHydrator $hydrator */
-        $metadata = $this->metadata->getObjectMetadata(get_class($object));
+        return $this->metadata->getMetadata(get_class($object));
+    }
+
+    /**
+     * Convert a object to a simple document
+     *
+     * @param mixed           $object
+     * @param MetadataOptions $metadata
+     *
+     * @throws Exception\RuntimeException
+     *
+     * @return Document\DocumentEntity
+     */
+    protected function createDocument($object, MetadataOptions $metadata)
+    {
         $hydrator = $this->hydratorManager->get($metadata->getHydrator());
 
-        // extract data
         $data = $hydrator->extract($object);
+        $id   = isset($data[$metadata->getId()]) ? $data[$metadata->getId()] : null;
 
-        // transform it to a document
-        return new Document($data[$metadata->getId()], $data, $metadata->getType(), $metadata->getIndex());
+        $document = new Document\DocumentEntity();
+        $document->setId($id);
+        $document->setType($metadata->getType());
+        $document->setIndex($metadata->getIndex());
+        $document->setBody($data);
+
+        if ($metadata->getRouting() !== null) {
+            $routing = $this->routingManager->get($metadata->getRouting())->getRouting($object);
+            if ($routing) {
+                $document->setRouting($routing);
+            }
+        }
+
+        if ($metadata->getParent() !== null) {
+            $parent       = $metadata->getParent();
+            $parentObject = $object->{$parent['accessor']}();
+
+            if ($parentObject !== null) {
+                $document->setParent($parentObject->{$parent['getter']}());
+            } elseif ($document->getRouting() === null) {
+                throw new Exception\RuntimeException('Parent object cannot be null without specifying routing');
+            }
+        }
+
+        return $document;
     }
 
     /**
      * Add a document
      *
-     * @param mixed $object
-     *
-     * @triggers add.pre
-     * @triggers add.post
+     * @param mixed       $object
+     * @param string|null $writer
      *
      * @throws Exception\InvalidArgumentException       If an invalid object is passed
      * @throws Exception\ObjectMetadataMissingException If the object metadata cannot be found
-     * @throws Exception\RuntimeException               In case something goes wrong during persisting the document
      *
      * @return void
      */
-    public function add($object)
+    public function add($object, $writer = null)
     {
-        $document = $this->transform($object);
+        $metadata = $this->getMetadata($object);
+        $document = $this->createDocument($object, $metadata);
 
-        $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, compact('document', 'object'));
-
-        $response = $this->client->addDocuments([$document]);
-
-        $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, compact('document', 'object', 'response'));
-
-        if (! $response->isOk()) {
-            throw new Exception\RuntimeException($response->getError());
-        }
+        $writer = $writer ?: $metadata->getWriter();
+        $writer = $this->writerManager->get($writer);
+        $writer->insert($document);
     }
 
     /**
      * Update a document
      *
-     * @param mixed $object
-     *
-     * @triggers update.pre
-     * @triggers update.post
+     * @param mixed       $object
+     * @param string|null $writer
      *
      * @throws Exception\InvalidArgumentException       If an invalid object is passed
      * @throws Exception\ObjectMetadataMissingException If the object metadata cannot be found
-     * @throws Exception\RuntimeException               In case something goes wrong during an update
      *
      * @return void
      */
-    public function update($object)
+    public function update($object, $writer = null)
     {
-        $document = $this->transform($object);
+        $metadata = $this->getMetadata($object);
+        $document = $this->createDocument($object, $metadata);
 
-        $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, compact('document', 'object'));
-
-        $response = $this->client->updateDocument(
-            $document->getId(),
-            $document->getData(),
-            $document->getIndex(),
-            $document->getType()
-        );
-
-        $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, compact('document', 'object', 'response'));
-
-        if (! $response->isOk()) {
-            throw new Exception\RuntimeException($response->getError());
-        }
+        $writer = $writer ?: $metadata->getWriter();
+        $writer = $this->writerManager->get($writer);
+        $writer->update($document);
     }
 
     /**
      * Deletes a document from it's index
      *
-     * @param mixed $object
-     *
-     * @triggers delete.pre
-     * @triggers delete.post
+     * @param mixed       $object
+     * @param string|null $writer
      *
      * @throws Exception\InvalidArgumentException       If an invalid object is passed
      * @throws Exception\ObjectMetadataMissingException If the object metadata cannot be found
-     * @throws Exception\RuntimeException               In case something goes wrong during an update
      *
      * @return void
      */
-    public function delete($object)
+    public function delete($object, $writer = null)
     {
-        $document = $this->transform($object);
+        $metadata = $this->getMetadata($object);
+        $document = $this->createDocument($object, $metadata);
 
-        $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.pre', $this, compact('document', 'object'));
-
-        $response = $this->client->deleteDocuments([$document]);
-
-        $this->getEventManager()
-             ->trigger(__FUNCTION__ . '.post', $this, compact('document', 'object', 'response'));
-
-        if (! $response->isOk()) {
-            throw new Exception\RuntimeException($response->getError());
-        }
+        $writer = $writer ?: $metadata->getWriter();
+        $writer = $this->writerManager->get($writer);
+        $writer->delete($document);
     }
 }

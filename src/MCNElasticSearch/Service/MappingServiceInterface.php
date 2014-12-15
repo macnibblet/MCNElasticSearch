@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
@@ -48,20 +48,16 @@ use Zend\EventManager\EventsCapableInterface;
 interface MappingServiceInterface extends EventsCapableInterface
 {
     /**
-     * Creates the mapping of all or a list of given types
-     *
-     * @param array $types List of type names to build
+     * Creates the mapping
      *
      * @return void
      */
-    public function create(array $types = []);
+    public function create();
 
     /**
-     * Delete the entire mapping or a specific part
-     *
-     * @param array $types
+     * Delete the entire mapping
      *
      * @return void
      */
-    public function delete(array $types = []);
+    public function delete();
 }

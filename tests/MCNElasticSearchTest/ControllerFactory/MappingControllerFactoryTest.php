@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
@@ -43,14 +43,14 @@ namespace MCNElasticSearchTest\ControllerFactory;
 use MCNElasticSearch\Controller\MappingController;
 use MCNElasticSearchTest\Util\ServiceManagerFactory;
 use Zend\Console\Console;
-use MCNElasticSearch\ControllerFactory\MappingControllerFactory;
+use MCNElasticSearch\Factory\Controller\MappingControllerFactory;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 
 class MappingControllerFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \MCNElasticSearch\ControllerFactory\MappingControllerFactory
+     * @var \MCNElasticSearch\Factory\Controller\MappingControllerFactory
      */
     protected $factory;
 

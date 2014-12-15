@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,30 +34,41 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-use Elastica\Client;
+use Elasticsearch\Client;
+use MCNElasticSearch\Factory\Routing\RoutingPluginManagerFactory;
+use MCNElasticSearch\Routing\RoutingPluginManager;
+use MCNElasticSearch\Service\Document\Writer\WriterPluginManager;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
 use MCNElasticSearch\Service\MetadataService;
+use MCNElasticSearch\Service\Search\Paginator\AdapterPluginManager;
 use MCNElasticSearch\Service\SearchService;
-use MCNElasticSearch\ServiceFactory\ClientFactory;
-use MCNElasticSearch\ServiceFactory\MappingServiceFactory;
-use MCNElasticSearch\ServiceFactory\DocumentServiceFactory;
-use MCNElasticSearch\ServiceFactory\MetadataServiceFactory;
-use MCNElasticSearch\ServiceFactory\SearchServiceFactory;
+use MCNElasticSearch\Factory\Service\ClientFactory;
+use MCNElasticSearch\Factory\Service\Document\Writer\WriterPluginManagerFactory;
+use MCNElasticSearch\Factory\Service\MappingServiceFactory;
+use MCNElasticSearch\Factory\Service\DocumentServiceFactory;
+use MCNElasticSearch\Factory\Service\MetadataServiceFactory;
+use MCNElasticSearch\Factory\Service\SearchServiceFactory;
+use MCNElasticSearch\Factory\Service\Search\Paginator\AdapterPluginManagerFactory;
 
 /**
  * Service manager configuration for elastic search
  */
 return [
     'factories' => [
-        Client::class          => ClientFactory::class,
-        SearchService::class   => SearchServiceFactory::class,
-        MappingService::class  => MappingServiceFactory::class,
-        DocumentService::class => DocumentServiceFactory::class,
-        MetadataService::class => MetadataServiceFactory::class
-    ]
+        Client::class              => ClientFactory::class,
+        SearchService::class       => SearchServiceFactory::class,
+        MappingService::class      => MappingServiceFactory::class,
+        DocumentService::class     => DocumentServiceFactory::class,
+        MetadataService::class     => MetadataServiceFactory::class,
+
+        // Abstract plugin managers
+        WriterPluginManager::class  => WriterPluginManagerFactory::class,
+        AdapterPluginManager::class => AdapterPluginManagerFactory::class,
+        RoutingPluginManager::class => RoutingPluginManagerFactory::class
+    ],
 ];

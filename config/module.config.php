@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011-2013 Antoine Hedgecock.
+ * Copyright (c) 2011-2014 Antoine Hedgecock.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,23 @@
  *
  * @author      Antoine Hedgecock <antoine@pmg.se>
  *
- * @copyright   2011-2013 Antoine Hedgecock
+ * @copyright   2011-2014 Antoine Hedgecock
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
+use MCNElasticSearch\Factory\Service\Search\Paginator\Adapter\HydratedResultAdapterFactory;
+use MCNElasticSearch\Service\Document\Writer\Adapter\DevNull;
+use MCNElasticSearch\Service\Document\Writer\Adapter\Immediate;
+use MCNElasticSearch\Service\Document\Writer\Logger;
 use MCNElasticSearch\Service\DocumentService;
 use MCNElasticSearch\Service\MappingService;
+use MCNElasticSearch\Service\Search\Paginator\Adapter\Doctrine;
+use MCNElasticSearch\Service\Search\Paginator\Adapter\HydratedResultAdapter;
+use MCNElasticSearch\Service\Search\Paginator\Adapter\Raw;
 use MCNElasticSearch\Service\SearchService;
+use MCNElasticSearch\Factory\Service\Document\Writer\Adapter\ImmediateFactory;
+use MCNElasticSearch\Factory\Service\Document\Writer\LoggerFactory;
+use Psr\Log\LogLevel;
 
 return [
     'MCNElasticSearch' => [
@@ -51,19 +61,65 @@ return [
         'client' => [],
 
         /**
+         * Logging configuration
+         */
+        'logging' => [
+
+            /**
+             * If the logger should be enabled
+             */
+            'enabled' => false,
+
+            /**
+             * The key used to get the logger utility from the service locator
+             */
+            'logger_service_name'  => null,
+
+            /**
+             * Options that are passed to the MCNElasticSearch\Document\Writer\LoggerOptions
+             */
+            'options' => [
+                'logLevel' => LogLevel::NOTICE
+            ]
+        ],
+
+        /**
          * Metadata configuration
          */
         'metadata' => [
 
-            /**
-             * List of object mappings
-             */
-            'objects' => [],
+        ],
 
-            /**
-             * List of types E.g "SQL Tables"
-             */
-            'types' => []
+        /**
+         * Plugin manager for the different writers available
+         */
+        'writer_manager' => [
+            'invokables' => [
+                DevNull::class => DevNull::class
+            ],
+
+            'factories' => [
+                Logger::class    => LoggerFactory::class,
+                Immediate::class => ImmediateFactory::class
+            ]
+        ],
+
+        'adapter_manager' => [
+            'invokables' => [
+                Raw::class => Raw::class
+            ],
+
+            'factories' => [
+                HydratedResultAdapter::class => HydratedResultAdapterFactory::class
+            ],
+
+            'shared' => [
+                HydratedResultAdapter::class => false
+            ]
+        ],
+
+        'routing_manager' => [
+
         ],
 
         DocumentService::class => [
