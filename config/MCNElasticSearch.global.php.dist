@@ -59,7 +59,7 @@ return [
         'metadata' => [
 
             'Foo\Entity\BarEntity' => [
-                'hydrator' => 'Foo\Hydrator\BarHydrator,
+                'hydrator' => 'Foo\Hydrator\BarHydrator',
                 'type'     => 'companies',
                 'index'    => 'lokalbygg',
 
