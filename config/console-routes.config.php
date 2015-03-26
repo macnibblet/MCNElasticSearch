@@ -62,4 +62,15 @@ return [
             ]
         ]
     ],
+
+    'es-prune-mapping' => [
+        'options' => [
+            'route'    => 'es mapping prune [-y]',
+            'defaults' => [
+
+                'controller' => MappingController::class,
+                'action'     => 'prune',
+            ]
+        ]
+    ],
 ];
