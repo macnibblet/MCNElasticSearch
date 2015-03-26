@@ -209,7 +209,7 @@ class MappingService implements MappingServiceInterface
                         'error' => $exception->getMessage()
                     ];
                 } finally {
-                    $metadata = new \MCNElasticSearch\Options\MetadataOptions;
+                    $metadata = new MetadataOptions;
                     $metadata->setIndex($index);
                     $metadata->setType($type);
 
