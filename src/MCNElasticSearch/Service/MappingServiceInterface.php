@@ -60,4 +60,11 @@ interface MappingServiceInterface extends EventsCapableInterface
      * @return void
      */
     public function delete();
+
+    /**
+     * Prune mappings that are not in the configuration
+     *
+     * @return void
+     */
+    public function prune();
 }
