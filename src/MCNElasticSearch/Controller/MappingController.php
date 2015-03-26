@@ -109,7 +109,7 @@ class MappingController extends AbstractActionController
 
         if (isset($response['acknowledged']) && $response['acknowledged']) {
             $this->console->write('[Success] ', ColorInterface::GREEN);
-            $this->console->writeLine($metadata->getType());
+            $this->console->writeLine($metadata->getIndex() . '/' . $metadata->getType());
         } else {
             $this->console->write('[Error] ', ColorInterface::RED);
             $this->console->writeLine(sprintf('%s: %s', $metadata->getType(), $response['error']));
@@ -140,5 +140,20 @@ class MappingController extends AbstractActionController
 
         $this->service->getEventManager()->attach('delete', [$this, 'progress']);
         $this->service->delete();
+    }
+
+    /**
+     * Prune indexes that are missing from the configuration
+     */
+    public function pruneAction()
+    {
+        $skipPrompt = $this->getRequest()->getParam('y', false);
+
+        if (! $skipPrompt && !$this->prompt('Are you sure you want to delete all unknown mappings?')) {
+            return;
+        }
+
+        $this->service->getEventManager()->attach('prune', [$this, 'progress']);
+        $this->service->prune();
     }
 }

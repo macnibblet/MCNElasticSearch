@@ -168,4 +168,54 @@ class MappingService implements MappingServiceInterface
             }
         }
     }
+
+    /**
+     * Prune removed mappings from Elastic Search
+     *
+     * Be aware that to properly handle the response you must listen to the delete event
+     *
+     * @param array $types
+     *
+     * @return void
+     */
+    public function prune()
+    {
+        $list = $this->metadata->getAllMetadata();
+
+        $pruneMappings = $this->client->indices()->getMapping();
+
+        # Remove configured mappings from prune list
+        foreach ($list as $metadata) {
+            $index = $metadata->getIndex();
+            $type = $metadata->getType();
+
+            unset($pruneMappings[$index]['mappings'][$type]);
+        }
+
+        # Delete mappings that are not in the configuration
+        foreach ($pruneMappings as $index => $indexMapping) {
+            foreach ($indexMapping['mappings'] as $type => $typeMapping) {
+                try {
+                    $params = [
+                        'index' => $index,
+                        'type' => $type
+                    ];
+
+                    $response = $this->client->indices()->deleteMapping($params);
+                } catch (Exception $exception) {
+                    $response = [
+                        'ok' => false,
+                        'error' => $exception->getMessage()
+                    ];
+                } finally {
+                    $metadata = new MetadataOptions;
+                    $metadata->setIndex($index);
+                    $metadata->setType($type);
+
+                    $this->getEventManager()
+                        ->trigger('prune', $this, compact('response', 'metadata'));
+                }
+            }
+        }
+    }
 }

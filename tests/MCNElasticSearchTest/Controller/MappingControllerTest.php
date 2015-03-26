@@ -145,4 +145,60 @@ class MappingControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->controller->dispatch($this->request);
     }
+
+    public function testPrune_skipPrompt()
+    {
+        $this->routeMatch->setParam('action', 'prune');
+        $this->request->getParams()->set('y', true);
+
+        $this->evm
+            ->expects($this->once())
+            ->method('attach')
+            ->with('prune', [$this->controller, 'progress']);
+
+        $this->mappingService
+            ->expects($this->once())
+            ->method('prune');
+
+        $this->controller->dispatch($this->request);
+    }
+
+    public function testPrune_failPrompt()
+    {
+        $this->routeMatch->setParam('action', 'prune');
+        $this->request->getParams()->set('y', false);
+
+        $this->mappingService
+            ->expects($this->never())
+            ->method('prune');
+
+        $this->controller
+            ->expects($this->once())
+            ->method('prompt')
+            ->will($this->returnValue(false));
+
+        $this->controller->dispatch($this->request);
+    }
+
+    public function testPrune_ConfirmPrompt()
+    {
+        $this->routeMatch->setParam('action', 'prune');
+        $this->request->getParams()->set('y', false);
+
+        $this->controller
+            ->expects($this->once())
+            ->method('prompt')
+            ->will($this->returnValue(true));
+
+        $this->evm
+            ->expects($this->once())
+            ->method('attach')
+            ->with('prune', [$this->controller, 'progress']);
+
+        $this->mappingService
+            ->expects($this->once())
+            ->method('prune');
+
+        $this->controller->dispatch($this->request);
+    }
 }
