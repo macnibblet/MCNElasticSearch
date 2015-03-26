@@ -194,7 +194,6 @@ class MappingService implements MappingServiceInterface
 
         # Delete mappings that are not in the configuration
         foreach ($pruneMappings as $index => $indexMapping) {
-
             foreach ($indexMapping['mappings'] as $type => $typeMapping) {
                 try {
                     $params = [
